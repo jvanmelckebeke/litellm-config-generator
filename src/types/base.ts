@@ -49,3 +49,26 @@ export function configValueToString(value: ConfigValue): string {
 export function env(name: string): EnvironmentRef {
   return {type: 'environment', name};
 }
+
+/**
+ * Interface for load balancing configurations
+ */
+export interface LoadBalanceConfig<T> {
+  parameterName: string;
+  credentials: T[];
+  credentialToParams: (credential: T) => Record<string, ConfigValue>;
+}
+
+/**
+ * Common credential types for load balancing
+ */
+export interface ApiKeyCredential {
+  apiKey: ConfigValue;
+}
+
+export interface AwsCredential {
+  accessKeyId: ConfigValue;
+  secretAccessKey: ConfigValue;
+  sessionToken?: ConfigValue;
+  region?: ConfigValue;
+}

@@ -101,7 +101,20 @@ export class YamlGenerator {
 
       const processedValue = this.processValue(value);
 
-      if (typeof processedValue === 'object' && processedValue !== null) {
+      if (Array.isArray(processedValue)) {
+        result += `${' '.repeat(indent)}    ${key}:\n`;
+        for (const item of processedValue) {
+          result += `${' '.repeat(indent)}      - `;
+          if (typeof item === 'object' && item !== null) {
+            result += '\n';
+            for (const [itemKey, itemValue] of Object.entries(item)) {
+              result += `${' '.repeat(indent)}        ${itemKey}: ${this.formatValue(itemValue, indent + 10)}\n`;
+            }
+          } else {
+            result += `${this.formatValue(item, indent + 8)}\n`;
+          }
+        }
+      } else if (typeof processedValue === 'object' && processedValue !== null) {
         result += `${' '.repeat(indent)}    ${key}:\n`;
         for (const [subKey, subValue] of Object.entries(processedValue)) {
           result += `${' '.repeat(indent)}      ${subKey}: ${this.formatValue(subValue, indent + 8)}\n`;

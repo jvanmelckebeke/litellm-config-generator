@@ -34,7 +34,7 @@ The library follows a hierarchical builder pattern:
 - Used by all provider builders internally
 
 **Provider Builders (`src/providers/`)**
-- **AwsBedrockBuilder**: Handles AWS authentication, CRIS (Cross-Region Inference), regional fallbacks
+- **AwsBedrockBuilder**: Handles AWS authentication, CRIS (Cross-Region Inference), regional fallbacks, cache control, and advanced load balancing
 - **GeminiBuilder**: Manages API key load balancing across multiple keys
 
 **CRIS System (`src/types/models.ts`)**
@@ -54,10 +54,23 @@ Environment variables and configuration values use a typed system:
 - Automatically converts to `os.environ/VAR_NAME` in YAML output
 - Supports both direct strings and structured ConfigValue objects
 
+### Advanced Features
+
+**Cache Control Support**
+- Configure cache control injection points with `withCacheControl(['system', 'user', 'assistant'])`
+- Automatically injects cache control parameters for prompt caching
+- Reduces latency and costs for repeated prompts
+
+**Advanced Load Balancing (AWS)**
+- `addLoadBalancedModel()`: Single-axis load balancing across multiple AWS credentials
+- `addMultiAxisLoadBalancedModel()`: Multi-axis load balancing across regions × credentials
+- Supports fault tolerance and rate limit distribution across accounts
+
 ### Usage Pattern
 
 See `examples/main.ts` for the typical workflow:
 1. Create LiteLLMConfigBuilder with settings
 2. Create provider builders (AWS, Gemini)
-3. Add models with provider-specific methods
-4. Generate YAML with enhanced formatting via `writeToEnhancedFile()`
+3. Configure advanced features (cache control, load balancing)
+4. Add models with provider-specific methods
+5. Generate YAML with enhanced formatting via `writeToEnhancedFile()`

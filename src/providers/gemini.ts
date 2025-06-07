@@ -1,5 +1,5 @@
 import {ModelBuilder} from '../models/model-builder';
-import {ConfigValue} from '../types/base';
+import {ConfigValue, LoadBalanceConfig, ApiKeyCredential} from '../types/base';
 import {ModelParams} from '../types/config';
 
 /**
@@ -49,14 +49,18 @@ export class GeminiBuilder {
   }): this {
     const {displayName, modelId, apiKeys, litellmParams = {}, rootParams = {}} = options;
 
-    this.modelBuilder.addLoadBalancedModels({
+    const loadBalanceConfig: LoadBalanceConfig<ApiKeyCredential> = {
+      parameterName: 'api_key',
+      credentials: apiKeys.map(apiKey => ({apiKey})),
+      credentialToParams: (credential) => ({api_key: credential.apiKey})
+    };
+
+    this.modelBuilder.addLoadBalancedModel({
       modelName: displayName,
       modelPath: `gemini/${modelId}`,
-      litellmParams: litellmParams,
-      rootParams: rootParams,
-      loadBalanceOn: 'api_key',
-      values: apiKeys,
-      valueToParam: (key) => key
+      loadBalanceConfig,
+      baseLitellmParams: litellmParams,
+      baseRootParams: rootParams
     });
 
     return this;

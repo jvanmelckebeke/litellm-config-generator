@@ -4,11 +4,22 @@ import {ConfigValue} from './base';
  * Type definitions for LiteLLM configuration
  */
 
+export interface CacheControlInjectionPoint {
+  location: "message";
+  role: string;
+  index: number;
+}
+
 export interface ModelParams {
   /**
    * requests per minute
    */
   rpm?: number;
+
+  /**
+   * Cache control injection points for AWS Bedrock
+   */
+  cache_control_injection_points?: CacheControlInjectionPoint[];
 
   [key: string]: any;
 }
@@ -200,10 +211,10 @@ export interface GeneralSettings {
 }
 
 export interface RouterSettings {
-  routing_strategy?: "simple-shuffle" | "least-busy" | "usage-based-routing" | "latency-based-routing";
-  redis_host?: string;
-  redis_password?: string;
-  redis_port?: string;
+  routing_strategy?: "simple-shuffle" | "least-busy" | "usage-based-routing" | "latency-based-routing" | "usage-based-routing-v2";
+  redis_host?: ConfigValue;
+  redis_password?: ConfigValue;
+  redis_port?: ConfigValue;
   enable_pre_call_checks?: boolean;
   allowed_fails?: number;
   cooldown_time?: number;

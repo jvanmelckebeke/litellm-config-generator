@@ -22,5 +22,6 @@ export type {
   RouterSettings,
   ModelDefinition,
   ModelParams,
+  CacheControlInjectionPoint,
   LiteLLMConfig
 } from './types/config';

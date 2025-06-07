@@ -133,6 +133,28 @@ export class LiteLLMConfigBuilder {
   }
 
   /**
+   * Add AWS provider fallbacks to router settings
+   */
+  withAwsRegionFallbacks(awsBuilder: AwsBedrockBuilder): this {
+    const fallbacks = awsBuilder.getFallbacks();
+
+    if (!this.routerSettings) {
+      this.routerSettings = {};
+    }
+
+    if (!this.routerSettings.fallbacks) {
+      this.routerSettings.fallbacks = [];
+    }
+
+    this.routerSettings.fallbacks = [
+      ...this.routerSettings.fallbacks,
+      ...fallbacks
+    ];
+
+    return this;
+  }
+
+  /**
    * Write configuration to a file with enhanced readability and comments
    */
   writeToEnhancedFile(filePath: string): void {

@@ -1,4 +1,5 @@
 import {ModelParams, ModelDefinition} from '../types/config';
+import {LoadBalanceConfig, ConfigValue} from '../types/base';
 
 /**
  * Core model builder that provides flexible methods to create model configurations
@@ -35,7 +36,42 @@ export class ModelBuilder {
 
 
   /**
-   * Add load-balanced models by varying a specific parameter
+   * Add load-balanced models using a standardized configuration
+   * All models will have the same name for LiteLLM load balancing
+   */
+  addLoadBalancedModel<T>(options: {
+    modelName: string;
+    modelPath: string;
+    loadBalanceConfig: LoadBalanceConfig<T>;
+    baseLitellmParams?: ModelParams;
+    baseRootParams?: Record<string, any>;
+  }): this {
+    const {
+      modelName,
+      modelPath,
+      loadBalanceConfig,
+      baseLitellmParams = {},
+      baseRootParams = {}
+    } = options;
+
+    loadBalanceConfig.credentials.forEach((credential) => {
+      const credentialParams = loadBalanceConfig.credentialToParams(credential);
+      const params = {...baseLitellmParams, ...credentialParams};
+
+      // All load-balanced models use the same name
+      this.addModel({
+        modelName: modelName,
+        modelPath: modelPath,
+        litellmParams: params,
+        rootParams: baseRootParams
+      });
+    });
+
+    return this;
+  }
+
+  /**
+   * Add load-balanced models by varying a specific parameter (legacy method)
    */
   addLoadBalancedModels<T>(options: {
     modelName: string;
@@ -58,22 +94,19 @@ export class ModelBuilder {
       nameSuffix
     } = options;
 
-    values.forEach(value => {
-      const params = {...litellmParams};
-      params[loadBalanceOn] = valueToParam(value);
+    const loadBalanceConfig: LoadBalanceConfig<T> = {
+      parameterName: loadBalanceOn,
+      credentials: values,
+      credentialToParams: (value: T) => ({[loadBalanceOn]: valueToParam(value)})
+    };
 
-      // Use either the base name or add a suffix if provided
-      const name = nameSuffix ? `${modelName}${nameSuffix(value)}` : modelName;
-
-      this.addModel({
-        modelName: name,
-        modelPath: modelPath,
-        litellmParams: params,
-        rootParams: rootParams
-      });
+    return this.addLoadBalancedModel({
+      modelName,
+      modelPath,
+      loadBalanceConfig,
+      baseLitellmParams: litellmParams,
+      baseRootParams: rootParams
     });
-
-    return this;
   }
 
   /**

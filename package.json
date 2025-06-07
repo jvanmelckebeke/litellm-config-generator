@@ -8,7 +8,6 @@
     "build": "tsc",
     "start": "ts-node src/index.ts",
     "test": "jest",
-    "example:split": "ts-node examples/split-configs.ts",
     "example:main": "ts-node examples/main.ts"
   },
   "keywords": [
