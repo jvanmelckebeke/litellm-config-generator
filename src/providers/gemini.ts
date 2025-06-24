@@ -6,7 +6,7 @@ import {
   UnifiedLoadBalanceConfig,
   BaseAddModelOptions,
   BaseLoadBalanceOptions
-} from './base-provider';
+} from './base';
 
 export interface GeminiAddModelOptions extends BaseAddModelOptions {
   modelId: string;
@@ -78,29 +78,4 @@ export class GeminiBuilder extends ProviderBuilder {
     return this;
   }
 
-  /**
-   * Convenience method: Add a Gemini model with load balancing across multiple API keys
-   */
-  addApiKeyLoadBalancedModel(options: {
-    displayName: string;
-    modelId: string;
-    apiKeys: ConfigValue[];
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-  }): this {
-    const {displayName, modelId, apiKeys, litellmParams, rootParams} = options;
-
-    return this.addLoadBalancedModel({
-      displayName,
-      modelId,
-      loadBalanceConfig: {
-        dimensions: {
-          credentials: apiKeys
-        },
-        strategy: 'cartesian'
-      },
-      litellmParams,
-      rootParams
-    });
-  }
 }

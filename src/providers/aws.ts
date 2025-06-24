@@ -13,7 +13,7 @@ import {
   AwsLoadBalanceCredential,
   BaseAddModelOptions,
   BaseLoadBalanceOptions
-} from './base-provider';
+} from './base';
 
 export type AwsRegion = 'us' | 'eu';
 
@@ -119,46 +119,6 @@ export class AwsBedrockBuilder extends ProviderBuilder {
   }
 
 
-  /**
-   * Add multiple model variations with region fallback
-   */
-  addModelVariationsWithFallback(options: {
-    baseModelId: string;
-    baseDisplayName: string;
-    primaryRegion: AwsRegion;
-    fallbackRegion: AwsRegion;
-    variations: Array<{
-      suffix: string;
-      litellmParams?: ModelParams;
-      rootParams?: Record<string, any>;
-    }>;
-    fallbackSuffix?: string;
-  }): this {
-    const {
-      baseModelId,
-      baseDisplayName,
-      primaryRegion,
-      fallbackRegion,
-      variations,
-      fallbackSuffix = '-fallback'
-    } = options;
-
-    variations.forEach(variation => {
-      const modelName = `${baseDisplayName}-${variation.suffix}`;
-
-      this.addRegionFallbackModel({
-        baseModelId,
-        displayName: modelName,
-        primaryRegion,
-        fallbackRegion,
-        litellmParams: variation.litellmParams,
-        rootParams: variation.rootParams,
-        fallbackSuffix
-      });
-    });
-
-    return this;
-  }
 
   /**
    * Get all defined fallbacks
@@ -198,57 +158,6 @@ export class AwsBedrockBuilder extends ProviderBuilder {
     return this;
   }
 
-  /**
-   * Add multiple model variations with the same AWS authentication across regions
-   */
-  addMultiRegionModelVariations(options: {
-    baseModelId: string;
-    displayName: string;
-    regions: AwsRegion[];
-    variations: Array<{
-      suffix: string;
-      litellmParams?: ModelParams;
-      rootParams?: Record<string, any>;
-    }>;
-    baseLitellmParams?: ModelParams;
-    baseRootParams?: Record<string, any>;
-  }): this {
-    const {
-      baseModelId,
-      displayName,
-      regions,
-      variations,
-      baseLitellmParams = {},
-      baseRootParams = {}
-    } = options;
-
-    regions.forEach(region => {
-      const regionVar = this.options.defaultRegionMap[region];
-      const modelId = getRegionalModelId(baseModelId, region) || `${region}.${baseModelId}`;
-
-      if (modelId) {
-        variations.forEach(variation => {
-          const modelName = `${displayName}-${variation.suffix}`;
-          const litellmParams = variation.litellmParams || {};
-          const rootParams = variation.rootParams || {};
-
-          const params = this.buildAwsLitellmParams(regionVar, {
-            ...baseLitellmParams,
-            ...litellmParams
-          });
-
-          this.modelBuilder.addModel({
-            modelName: modelName,
-            modelPath: `bedrock/${modelId}`,
-            litellmParams: params,
-            rootParams: {...baseRootParams, ...rootParams}
-          });
-        });
-      }
-    });
-
-    return this;
-  }
 
   /**
    * Add a model with unified load balancing across multiple dimensions
@@ -441,92 +350,5 @@ export class AwsBedrockBuilder extends ProviderBuilder {
     return this;
   }
 
-  /**
-   * Convenience method: Add a model with load balancing across multiple AWS credentials (single region)
-   */
-  addCredentialLoadBalancedModel(options: {
-    displayName: string;
-    modelId: BedrockModelId | string;
-    region: AwsRegion;
-    awsCredentials: AwsLoadBalanceCredential[];
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-  }): this {
-    const {displayName, modelId, region, awsCredentials, litellmParams, rootParams} = options;
-    
-    return this.addLoadBalancedModel({
-      displayName,
-      modelId,
-      loadBalanceConfig: {
-        dimensions: {
-          credentials: awsCredentials,
-          regions: [region]
-        },
-        strategy: 'cartesian'
-      },
-      litellmParams,
-      rootParams
-    });
-  }
-
-  /**
-   * Convenience method: Add a model with multi-axis load balancing across regions AND credentials
-   */
-  addMultiAxisLoadBalancedModel(options: {
-    displayName: string;
-    modelId: BedrockModelId | string;
-    regions: AwsRegion[];
-    awsCredentials: AwsLoadBalanceCredential[];
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-  }): this {
-    const {displayName, modelId, regions, awsCredentials, litellmParams, rootParams} = options;
-    
-    return this.addLoadBalancedModel({
-      displayName,
-      modelId,
-      loadBalanceConfig: {
-        dimensions: {
-          credentials: awsCredentials,
-          regions
-        },
-        strategy: 'cartesian'
-      },
-      litellmParams,
-      rootParams
-    });
-  }
-
-  /**
-   * Convenience method: Add a model with region-based fallback
-   */
-  addRegionFallbackModel(options: {
-    baseModelId: string;
-    displayName: string;
-    primaryRegion: AwsRegion;
-    fallbackRegion: AwsRegion;
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-    fallbackSuffix?: string;
-  }): this {
-    const {baseModelId, displayName, primaryRegion, fallbackRegion, litellmParams, rootParams, fallbackSuffix} = options;
-    
-    return this.addLoadBalancedModel({
-      displayName,
-      modelId: baseModelId,
-      loadBalanceConfig: {
-        dimensions: {
-          regions: [primaryRegion, fallbackRegion]
-        },
-        strategy: 'fallback',
-        fallbackConfig: {
-          primary: primaryRegion,
-          suffix: fallbackSuffix
-        }
-      },
-      litellmParams,
-      rootParams
-    });
-  }
 
 }
