@@ -1,6 +1,6 @@
 import {ModelBuilder} from '../models/model-builder';
 import {ConfigValue, LoadBalanceConfig} from '../types/base';
-import {ModelParams, CacheControlInjectionPoint} from '../types/config';
+import {ModelParams} from '../types/config';
 import {
   BedrockModelId,
   supportsCRIS,
@@ -43,7 +43,7 @@ export interface AwsProviderOptions {
 /**
  * Specialized builder for AWS Bedrock models with cross-region support
  */
-export class AwsBedrockBuilder extends ProviderBuilder {
+export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLoadBalanceOptions> {
   private options: AwsProviderOptions;
   private fallbacks: Array<Record<string, string[]>> = [];
   private cacheControlRoles?: string[];
@@ -124,7 +124,6 @@ export class AwsBedrockBuilder extends ProviderBuilder {
   }
 
 
-
   /**
    * Get all defined fallbacks
    */
@@ -169,7 +168,7 @@ export class AwsBedrockBuilder extends ProviderBuilder {
    */
   addLoadBalancedModel(options: AwsLoadBalanceOptions): this {
     const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
-    
+
     if (loadBalanceConfig.strategy === 'cartesian') {
       return this.addCartesianLoadBalancedModel({
         displayName,

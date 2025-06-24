@@ -30,9 +30,9 @@ export interface BaseLoadBalanceOptions extends BaseAddModelOptions {
 }
 
 /**
- * Abstract base class for provider builders
+ * Abstract base class for provider builders with type-safe provider-specific extensions
  */
-export abstract class ProviderBuilder {
+export abstract class ProviderBuilder<TAddModelOptions extends BaseAddModelOptions = BaseAddModelOptions, TLoadBalanceOptions extends BaseLoadBalanceOptions = BaseLoadBalanceOptions> {
   protected modelBuilder: ModelBuilder;
 
   constructor(modelBuilder: ModelBuilder) {
@@ -42,10 +42,10 @@ export abstract class ProviderBuilder {
   /**
    * Add a single model with provider-specific configuration
    */
-  abstract addModel(options: BaseAddModelOptions & Record<string, any>): this;
+  abstract addModel(options: TAddModelOptions): this;
 
   /**
    * Add a model with unified load balancing across multiple dimensions
    */
-  abstract addLoadBalancedModel(options: BaseLoadBalanceOptions & Record<string, any>): this;
+  abstract addLoadBalancedModel(options: TLoadBalanceOptions): this;
 }

@@ -20,7 +20,7 @@ export interface GeminiLoadBalanceOptions extends BaseLoadBalanceOptions {
 /**
  * Specialized builder for Google Gemini models
  */
-export class GeminiBuilder extends ProviderBuilder {
+export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, GeminiLoadBalanceOptions> {
   constructor(modelBuilder: ModelBuilder) {
     super(modelBuilder);
   }
