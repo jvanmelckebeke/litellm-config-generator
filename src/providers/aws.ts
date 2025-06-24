@@ -1,5 +1,5 @@
 import {ModelBuilder} from '../models/model-builder';
-import {ConfigValue, LoadBalanceConfig, AwsCredential} from '../types/base';
+import {ConfigValue, LoadBalanceConfig} from '../types/base';
 import {ModelParams, CacheControlInjectionPoint} from '../types/config';
 import {
   BedrockModelId,
@@ -118,56 +118,6 @@ export class AwsBedrockBuilder extends ProviderBuilder {
     return this;
   }
 
-  /**
-   * Add a model with region-based fallback
-   */
-  addRegionFallbackModel(options: {
-    baseModelId: string;
-    displayName: string;
-    primaryRegion: AwsRegion;
-    fallbackRegion: AwsRegion;
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-    fallbackSuffix?: string;
-  }): this {
-    const {
-      baseModelId,
-      displayName,
-      primaryRegion,
-      fallbackRegion,
-      litellmParams = {},
-      rootParams = {},
-      fallbackSuffix = '-fallback'
-    } = options;
-
-    // Create the primary region model
-    const primaryModelId = getRegionalModelId(baseModelId, primaryRegion) || `${primaryRegion}.${baseModelId}`;
-    const primaryRegionVar = this.options.defaultRegionMap[primaryRegion];
-
-    this.modelBuilder.addModel({
-      modelName: displayName,
-      modelPath: `bedrock/${primaryModelId}`,
-      litellmParams: this.buildAwsLitellmParams(primaryRegionVar, litellmParams),
-      rootParams: rootParams
-    });
-
-    // Create the fallback region model
-    const fallbackModelId = getRegionalModelId(baseModelId, fallbackRegion) || `${fallbackRegion}.${baseModelId}`;
-    const fallbackRegionVar = this.options.defaultRegionMap[fallbackRegion];
-    const fallbackModelName = `${displayName}${fallbackSuffix}`;
-
-    this.modelBuilder.addModel({
-      modelName: fallbackModelName,
-      modelPath: `bedrock/${fallbackModelId}`,
-      litellmParams: this.buildAwsLitellmParams(fallbackRegionVar, litellmParams),
-      rootParams: rootParams
-    });
-
-    // Add to fallbacks array
-    this.fallbacks.push({[displayName]: [fallbackModelName]});
-
-    return this;
-  }
 
   /**
    * Add multiple model variations with region fallback
@@ -301,46 +251,226 @@ export class AwsBedrockBuilder extends ProviderBuilder {
   }
 
   /**
-   * Add a model with load balancing across multiple AWS credentials (single region)
+   * Add a model with unified load balancing across multiple dimensions
    */
-  addLoadBalancedModel(options: {
+  addLoadBalancedModel(options: AwsLoadBalanceOptions): this {
+    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
+    
+    if (loadBalanceConfig.strategy === 'cartesian') {
+      return this.addCartesianLoadBalancedModel({
+        displayName,
+        modelId,
+        loadBalanceConfig,
+        litellmParams,
+        rootParams
+      });
+    } else if (loadBalanceConfig.strategy === 'fallback') {
+      return this.addFallbackLoadBalancedModel({
+        displayName,
+        modelId,
+        loadBalanceConfig,
+        litellmParams,
+        rootParams
+      });
+    }
+
+    throw new Error(`Unsupported load balance strategy: ${loadBalanceConfig.strategy}`);
+  }
+
+  /**
+   * Handle cartesian (cross-product) load balancing
+   */
+  private addCartesianLoadBalancedModel(options: {
     displayName: string;
     modelId: BedrockModelId | string;
-    region: AwsRegion;
-    awsCredentials: AwsCredential[];
+    loadBalanceConfig: UnifiedLoadBalanceConfig<AwsLoadBalanceCredential>;
     litellmParams?: ModelParams;
     rootParams?: Record<string, any>;
   }): this {
-    const {displayName, modelId, region, awsCredentials, litellmParams = {}, rootParams = {}} = options;
-    
-    const resolvedModelId = getRegionalModelId(modelId, region) || modelId;
-    const regionVar = this.options.defaultRegionMap[region];
+    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
+    const {credentials = [], regions = []} = loadBalanceConfig.dimensions;
 
-    const loadBalanceConfig: LoadBalanceConfig<AwsCredential> = {
-      parameterName: 'aws_credentials',
-      credentials: awsCredentials,
-      credentialToParams: (credential) => ({
-        aws_access_key_id: credential.accessKeyId,
-        aws_secret_access_key: credential.secretAccessKey,
-        aws_region_name: regionVar, // Use the specified region, not credential.region
-        ...(credential.sessionToken && {aws_session_token: credential.sessionToken})
-      })
-    };
+    if (credentials.length === 0 && regions.length === 0) {
+      throw new Error('At least one credential or region must be specified for cartesian load balancing');
+    }
 
-    this.modelBuilder.addLoadBalancedModel({
+    // Handle credentials-only case (single region)
+    if (credentials.length > 0 && regions.length === 0) {
+      // Default to first available region if none specified
+      const defaultRegion = Object.keys(this.options.defaultRegionMap)[0] as AwsRegion;
+      const regionVar = this.options.defaultRegionMap[defaultRegion];
+      const resolvedModelId = getRegionalModelId(modelId, defaultRegion) || modelId;
+
+      const loadBalanceConfigOld: LoadBalanceConfig<AwsLoadBalanceCredential> = {
+        parameterName: 'aws_credentials',
+        credentials,
+        credentialToParams: (credential) => ({
+          aws_access_key_id: credential.accessKeyId,
+          aws_secret_access_key: credential.secretAccessKey,
+          aws_region_name: regionVar,
+          ...(credential.sessionToken && {aws_session_token: credential.sessionToken})
+        })
+      };
+
+      this.modelBuilder.addLoadBalancedModel({
+        modelName: displayName,
+        modelPath: `bedrock/${resolvedModelId}`,
+        loadBalanceConfig: loadBalanceConfigOld,
+        baseLitellmParams: litellmParams,
+        baseRootParams: rootParams
+      });
+
+      return this;
+    }
+
+    // Handle regions-only case (single credential set)
+    if (regions.length > 0 && credentials.length === 0) {
+      regions.forEach(region => {
+        const awsRegion = region as AwsRegion;
+        const resolvedModelId = getRegionalModelId(modelId, awsRegion) || modelId;
+        const regionVar = this.options.defaultRegionMap[awsRegion];
+        const params = this.buildAwsLitellmParams(regionVar, litellmParams);
+
+        this.modelBuilder.addModel({
+          modelName: displayName,
+          modelPath: `bedrock/${resolvedModelId}`,
+          litellmParams: params,
+          rootParams: rootParams
+        });
+      });
+
+      return this;
+    }
+
+    // Handle multi-axis case (regions × credentials)
+    if (regions.length > 0 && credentials.length > 0) {
+      regions.forEach(region => {
+        const awsRegion = region as AwsRegion;
+        const resolvedModelId = getRegionalModelId(modelId, awsRegion) || modelId;
+        const regionVar = this.options.defaultRegionMap[awsRegion];
+
+        credentials.forEach(credential => {
+          const params = {
+            aws_access_key_id: credential.accessKeyId,
+            aws_secret_access_key: credential.secretAccessKey,
+            aws_region_name: regionVar,
+            ...(credential.sessionToken && {aws_session_token: credential.sessionToken}),
+            ...litellmParams
+          };
+
+          // Add cache control if configured
+          if (this.cacheControlRoles) {
+            params.cache_control_injection_points = this.cacheControlRoles.map(role => ({
+              location: "message" as const,
+              role,
+              index: 0
+            }));
+          }
+
+          this.modelBuilder.addModel({
+            modelName: displayName,
+            modelPath: `bedrock/${resolvedModelId}`,
+            litellmParams: params,
+            rootParams: rootParams
+          });
+        });
+      });
+
+      return this;
+    }
+
+    return this;
+  }
+
+  /**
+   * Handle fallback load balancing (primary + fallback)
+   */
+  private addFallbackLoadBalancedModel(options: {
+    displayName: string;
+    modelId: BedrockModelId | string;
+    loadBalanceConfig: UnifiedLoadBalanceConfig<AwsLoadBalanceCredential>;
+    litellmParams?: ModelParams;
+    rootParams?: Record<string, any>;
+  }): this {
+    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
+    const {regions = []} = loadBalanceConfig.dimensions;
+    const {fallbackConfig} = loadBalanceConfig;
+
+    if (!fallbackConfig) {
+      throw new Error('Fallback configuration is required when using fallback strategy');
+    }
+
+    if (regions.length === 0) {
+      throw new Error('At least one region must be specified for fallback load balancing');
+    }
+
+    const primaryRegion = fallbackConfig.primary as AwsRegion;
+    const fallbackSuffix = fallbackConfig.suffix || '-fallback';
+
+    // Create primary model
+    const resolvedModelId = getRegionalModelId(modelId, primaryRegion) || modelId;
+    const primaryRegionVar = this.options.defaultRegionMap[primaryRegion];
+    const primaryParams = this.buildAwsLitellmParams(primaryRegionVar, litellmParams);
+
+    this.modelBuilder.addModel({
       modelName: displayName,
       modelPath: `bedrock/${resolvedModelId}`,
-      loadBalanceConfig,
-      baseLitellmParams: litellmParams,
-      baseRootParams: rootParams
+      litellmParams: primaryParams,
+      rootParams: rootParams
+    });
+
+    // Create fallback models for other regions
+    regions.filter(region => region !== primaryRegion).forEach(region => {
+      const awsRegion = region as AwsRegion;
+      const fallbackModelId = getRegionalModelId(modelId, awsRegion) || modelId;
+      const fallbackRegionVar = this.options.defaultRegionMap[awsRegion];
+      const fallbackModelName = `${displayName}${fallbackSuffix}`;
+      const fallbackParams = this.buildAwsLitellmParams(fallbackRegionVar, litellmParams);
+
+      this.modelBuilder.addModel({
+        modelName: fallbackModelName,
+        modelPath: `bedrock/${fallbackModelId}`,
+        litellmParams: fallbackParams,
+        rootParams: rootParams
+      });
+
+      // Add to fallbacks array
+      this.fallbacks.push({[displayName]: [fallbackModelName]});
     });
 
     return this;
   }
 
   /**
-   * Add a model with multi-axis load balancing across regions AND credentials
-   * Creates models for every combination of region × credential
+   * Convenience method: Add a model with load balancing across multiple AWS credentials (single region)
+   */
+  addCredentialLoadBalancedModel(options: {
+    displayName: string;
+    modelId: BedrockModelId | string;
+    region: AwsRegion;
+    awsCredentials: AwsLoadBalanceCredential[];
+    litellmParams?: ModelParams;
+    rootParams?: Record<string, any>;
+  }): this {
+    const {displayName, modelId, region, awsCredentials, litellmParams, rootParams} = options;
+    
+    return this.addLoadBalancedModel({
+      displayName,
+      modelId,
+      loadBalanceConfig: {
+        dimensions: {
+          credentials: awsCredentials,
+          regions: [region]
+        },
+        strategy: 'cartesian'
+      },
+      litellmParams,
+      rootParams
+    });
+  }
+
+  /**
+   * Convenience method: Add a model with multi-axis load balancing across regions AND credentials
    */
   addMultiAxisLoadBalancedModel(options: {
     displayName: string;
@@ -350,40 +480,53 @@ export class AwsBedrockBuilder extends ProviderBuilder {
     litellmParams?: ModelParams;
     rootParams?: Record<string, any>;
   }): this {
-    const {displayName, modelId, regions, awsCredentials, litellmParams = {}, rootParams = {}} = options;
-
-    // Create models for every combination of region × credential
-    regions.forEach(region => {
-      const resolvedModelId = getRegionalModelId(modelId, region) || modelId;
-      const regionVar = this.options.defaultRegionMap[region];
-
-      awsCredentials.forEach(credential => {
-        const params = {
-          aws_access_key_id: credential.accessKeyId,
-          aws_secret_access_key: credential.secretAccessKey,
-          aws_region_name: regionVar,
-          ...(credential.sessionToken && {aws_session_token: credential.sessionToken}),
-          ...litellmParams
-        };
-
-        // Add cache control if configured
-        if (this.cacheControlRoles) {
-          params.cache_control_injection_points = this.cacheControlRoles.map(role => ({
-            location: "message" as const,
-            role,
-            index: 0
-          }));
-        }
-
-        this.modelBuilder.addModel({
-          modelName: displayName,
-          modelPath: `bedrock/${resolvedModelId}`,
-          litellmParams: params,
-          rootParams: rootParams
-        });
-      });
+    const {displayName, modelId, regions, awsCredentials, litellmParams, rootParams} = options;
+    
+    return this.addLoadBalancedModel({
+      displayName,
+      modelId,
+      loadBalanceConfig: {
+        dimensions: {
+          credentials: awsCredentials,
+          regions
+        },
+        strategy: 'cartesian'
+      },
+      litellmParams,
+      rootParams
     });
-
-    return this;
   }
+
+  /**
+   * Convenience method: Add a model with region-based fallback
+   */
+  addRegionFallbackModel(options: {
+    baseModelId: string;
+    displayName: string;
+    primaryRegion: AwsRegion;
+    fallbackRegion: AwsRegion;
+    litellmParams?: ModelParams;
+    rootParams?: Record<string, any>;
+    fallbackSuffix?: string;
+  }): this {
+    const {baseModelId, displayName, primaryRegion, fallbackRegion, litellmParams, rootParams, fallbackSuffix} = options;
+    
+    return this.addLoadBalancedModel({
+      displayName,
+      modelId: baseModelId,
+      loadBalanceConfig: {
+        dimensions: {
+          regions: [primaryRegion, fallbackRegion]
+        },
+        strategy: 'fallback',
+        fallbackConfig: {
+          primary: primaryRegion,
+          suffix: fallbackSuffix
+        }
+      },
+      litellmParams,
+      rootParams
+    });
+  }
+
 }
