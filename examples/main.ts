@@ -57,21 +57,29 @@ awsBuilder.addModel({
     region: 'eu'
 });
 
-// Claude models with thinking capability
-awsBuilder.addMultiRegionModelVariations({
-    baseModelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
-    displayName: 'claude-3-7',
-    regions: ['eu'],
-    variations: [
-        {
-            suffix: 'think-1024',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+// Claude models with thinking capability using unified load balancing
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-3-7-think-1024',
+    modelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['eu']
         },
-        {
-            suffix: 'think-16384',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
-        }
-    ]
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+});
+
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-3-7-think-16384',
+    modelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['eu']
+        },
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
 });
 
 awsBuilder.addModel({
@@ -80,21 +88,29 @@ awsBuilder.addModel({
     region: 'us'
 });
 
-// Claude models with thinking capability
-awsBuilder.addMultiRegionModelVariations({
-    baseModelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-    displayName: 'claude-4-sonnet',
-    regions: ['us'],
-    variations: [
-        {
-            suffix: 'think-1024',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+// Claude models with thinking capability using unified load balancing
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-4-sonnet-think-1024',
+    modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['us']
         },
-        {
-            suffix: 'think-16384',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
-        }
-    ]
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+});
+
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-4-sonnet-think-16384',
+    modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['us']
+        },
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
 });
 
 awsBuilder.addModel({
@@ -103,21 +119,29 @@ awsBuilder.addModel({
     region: 'us'
 });
 
-// Claude models with thinking capability
-awsBuilder.addMultiRegionModelVariations({
-    baseModelId: 'us.anthropic.claude-opus-4-20250514-v1:0',
-    displayName: 'claude-4-opus',
-    regions: ['us'],
-    variations: [
-        {
-            suffix: 'think-1024',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+// Claude models with thinking capability using unified load balancing
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-4-opus-think-1024',
+    modelId: 'us.anthropic.claude-opus-4-20250514-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['us']
         },
-        {
-            suffix: 'think-16384',
-            litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
-        }
-    ]
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 1024}}
+});
+
+awsBuilder.addLoadBalancedModel({
+    displayName: 'claude-4-opus-think-16384',
+    modelId: 'us.anthropic.claude-opus-4-20250514-v1:0',
+    loadBalanceConfig: {
+        dimensions: {
+            regions: ['us']
+        },
+        strategy: 'cartesian'
+    },
+    litellmParams: {thinking: {type: "enabled", budget_tokens: 16384}}
 });
 // Create the Gemini builder
 const geminiBuilder = builder.createGeminiBuilder();
@@ -129,32 +153,52 @@ const gemini_api_keys = [
     env('GEMINI_API_KEY_FALLBACK')
 ]
 
-// Add Gemini models
-geminiBuilder.addApiKeyLoadBalancedModel({
+// Add Gemini models using unified load balancing
+geminiBuilder.addLoadBalancedModel({
     displayName: 'gemini-2.0-flash',
     modelId: 'gemini-2.0-flash',
-    apiKeys: gemini_api_keys,
+    loadBalanceConfig: {
+        dimensions: {
+            credentials: gemini_api_keys
+        },
+        strategy: 'cartesian'
+    },
     rootParams: {rpm: 15}
 });
 
-geminiBuilder.addApiKeyLoadBalancedModel({
+geminiBuilder.addLoadBalancedModel({
     displayName: 'gemini-2.0-flash-lite',
     modelId: 'gemini-2.0-flash-lite',
-    apiKeys: gemini_api_keys,
+    loadBalanceConfig: {
+        dimensions: {
+            credentials: gemini_api_keys
+        },
+        strategy: 'cartesian'
+    },
     rootParams: {rpm: 30}
 });
 
-geminiBuilder.addApiKeyLoadBalancedModel({
+geminiBuilder.addLoadBalancedModel({
     displayName: 'gemini-2.5-flash',
     modelId: 'gemini-2.5-flash-preview-05-20',
-    apiKeys: gemini_api_keys,
+    loadBalanceConfig: {
+        dimensions: {
+            credentials: gemini_api_keys
+        },
+        strategy: 'cartesian'
+    },
     rootParams: {rpm: 10}
 });
 
-geminiBuilder.addApiKeyLoadBalancedModel({
+geminiBuilder.addLoadBalancedModel({
     displayName: 'text-embedding-004',
     modelId: 'text-embedding-004',
-    apiKeys: gemini_api_keys,
+    loadBalanceConfig: {
+        dimensions: {
+            credentials: gemini_api_keys
+        },
+        strategy: 'cartesian'
+    }
 });
 
 // Generate the config
