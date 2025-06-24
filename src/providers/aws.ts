@@ -10,10 +10,15 @@ import {
 import {
   ProviderBuilder,
   UnifiedLoadBalanceConfig,
-  AwsLoadBalanceCredential,
   BaseAddModelOptions,
   BaseLoadBalanceOptions
 } from './base';
+
+export interface AwsLoadBalanceCredential {
+  accessKeyId: ConfigValue;
+  secretAccessKey: ConfigValue;
+  sessionToken?: ConfigValue;
+}
 
 export type AwsRegion = 'us' | 'eu';
 
