@@ -13,6 +13,8 @@ import {
   BaseAddModelOptions,
   BaseLoadBalanceOptions
 } from './base';
+import {AwsModelBuilder} from '../builders/aws-model-builder';
+import {ModelConfig} from '../builders/model-builder';
 
 export interface AwsLoadBalanceCredential {
   accessKeyId: ConfigValue;
@@ -90,9 +92,49 @@ export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLo
   }
 
   /**
-   * Add basic Bedrock model with AWS authentication
+   * Add a model with fluent interface - returns AWS-specific model builder
    */
-  addModel(options: AwsAddModelOptions): this {
+  addModel(options: Pick<AwsAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: string, region?: AwsRegion}): AwsModelBuilder {
+    const config: ModelConfig & {modelId: string, region?: AwsRegion} = {
+      displayName: options.displayName,
+      litellmParams: options.litellmParams,
+      rootParams: options.rootParams,
+      modelId: options.modelId,
+      region: options.region
+    };
+    
+    return new AwsModelBuilder(this, config);
+  }
+
+  /**
+   * Execute a simple model (called by ModelBuilder)
+   */
+  executeModel(config: ModelConfig & {modelId?: string, region?: AwsRegion}): this {
+    if (!config.modelId) {
+      throw new Error('modelId is required for AWS models');
+    }
+    
+    const region = config.region || 'us' as AwsRegion;
+    return this.addBasicModel({
+      displayName: config.displayName,
+      modelId: config.modelId,
+      region,
+      litellmParams: config.litellmParams,
+      rootParams: config.rootParams
+    });
+  }
+
+  /**
+   * Execute a load-balanced model (called by ModelBuilder)
+   */
+  executeLoadBalancedModel(options: AwsLoadBalanceOptions): this {
+    return this.addLoadBalancedModel(options);
+  }
+
+  /**
+   * Add basic Bedrock model with AWS authentication (internal method)
+   */
+  private addBasicModel(options: AwsAddModelOptions): this {
     const {displayName, modelId, region, litellmParams = {}, rootParams = {}} = options;
     const regionVar = this.options.defaultRegionMap[region];
 

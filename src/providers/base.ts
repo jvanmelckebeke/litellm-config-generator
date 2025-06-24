@@ -1,5 +1,6 @@
 import {ModelBuilder} from '../models/model-builder';
 import {ModelParams} from '../types/config';
+import type {ModelConfig} from '../builders/model-builder';
 
 export type LoadBalanceStrategy = 'cartesian' | 'fallback';
 
@@ -40,12 +41,22 @@ export abstract class ProviderBuilder<TAddModelOptions extends BaseAddModelOptio
   }
 
   /**
-   * Add a single model with provider-specific configuration
+   * Add a model with fluent interface - returns provider-specific model builder
    */
-  abstract addModel(options: TAddModelOptions): this;
+  abstract addModel(options: Pick<TAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & Record<string, any>): any;
 
   /**
-   * Add a model with unified load balancing across multiple dimensions
+   * Execute a simple model (called by ModelBuilder)
+   */
+  abstract executeModel(config: ModelConfig): this;
+
+  /**
+   * Execute a load-balanced model (called by ModelBuilder)
+   */
+  abstract executeLoadBalancedModel(options: TLoadBalanceOptions): this;
+
+  /**
+   * Add a model with unified load balancing across multiple dimensions (legacy)
    */
   abstract addLoadBalancedModel(options: TLoadBalanceOptions): this;
 }
