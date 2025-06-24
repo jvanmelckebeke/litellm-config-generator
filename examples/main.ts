@@ -130,28 +130,28 @@ const gemini_api_keys = [
 ]
 
 // Add Gemini models
-geminiBuilder.addLoadBalancedModel({
+geminiBuilder.addApiKeyLoadBalancedModel({
     displayName: 'gemini-2.0-flash',
     modelId: 'gemini-2.0-flash',
     apiKeys: gemini_api_keys,
     rootParams: {rpm: 15}
 });
 
-geminiBuilder.addLoadBalancedModel({
+geminiBuilder.addApiKeyLoadBalancedModel({
     displayName: 'gemini-2.0-flash-lite',
     modelId: 'gemini-2.0-flash-lite',
     apiKeys: gemini_api_keys,
     rootParams: {rpm: 30}
 });
 
-geminiBuilder.addLoadBalancedModel({
+geminiBuilder.addApiKeyLoadBalancedModel({
     displayName: 'gemini-2.5-flash',
     modelId: 'gemini-2.5-flash-preview-05-20',
     apiKeys: gemini_api_keys,
     rootParams: {rpm: 10}
 });
 
-geminiBuilder.addLoadBalancedModel({
+geminiBuilder.addApiKeyLoadBalancedModel({
     displayName: 'text-embedding-004',
     modelId: 'text-embedding-004',
     apiKeys: gemini_api_keys,
