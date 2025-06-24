@@ -7,8 +7,24 @@ import {
   getRegionalModelId,
   parseModelId
 } from '../types/models';
+import {
+  ProviderBuilder,
+  UnifiedLoadBalanceConfig,
+  AwsLoadBalanceCredential,
+  BaseAddModelOptions,
+  BaseLoadBalanceOptions
+} from './base-provider';
 
 export type AwsRegion = 'us' | 'eu';
+
+export interface AwsAddModelOptions extends BaseAddModelOptions {
+  modelId: BedrockModelId | string;
+  region: AwsRegion;
+}
+
+export interface AwsLoadBalanceOptions extends BaseLoadBalanceOptions {
+  modelId: BedrockModelId | string;
+}
 
 export interface AwsProviderOptions {
   accessKeyId: ConfigValue;
@@ -18,26 +34,17 @@ export interface AwsProviderOptions {
   detectCRIS?: boolean; // Auto-detect CRIS support
 }
 
-/**
- * AWS credential for load balancing (without region - region is specified separately)
- */
-export interface AwsLoadBalanceCredential {
-  accessKeyId: ConfigValue;
-  secretAccessKey: ConfigValue;
-  sessionToken?: ConfigValue;
-}
 
 /**
  * Specialized builder for AWS Bedrock models with cross-region support
  */
-export class AwsBedrockBuilder {
-  private modelBuilder: ModelBuilder;
+export class AwsBedrockBuilder extends ProviderBuilder {
   private options: AwsProviderOptions;
   private fallbacks: Array<Record<string, string[]>> = [];
   private cacheControlRoles?: string[];
 
   constructor(modelBuilder: ModelBuilder, options: AwsProviderOptions) {
-    this.modelBuilder = modelBuilder;
+    super(modelBuilder);
     this.options = {
       detectCRIS: true, // Enable CRIS detection by default
       ...options
@@ -80,13 +87,7 @@ export class AwsBedrockBuilder {
   /**
    * Add basic Bedrock model with AWS authentication
    */
-  addModel(options: {
-    displayName: string;
-    modelId: BedrockModelId | string;
-    region: AwsRegion;
-    litellmParams?: ModelParams;
-    rootParams?: Record<string, any>;
-  }): this {
+  addModel(options: AwsAddModelOptions): this {
     const {displayName, modelId, region, litellmParams = {}, rootParams = {}} = options;
     const regionVar = this.options.defaultRegionMap[region];
 

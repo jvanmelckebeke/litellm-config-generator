@@ -1,5 +1,5 @@
 import {ModelBuilder} from '../models/model-builder';
-import {ConfigValue} from '../types/base';
+import {ConfigValue, AwsCredential, ApiKeyCredential} from '../types/base';
 import {ModelParams} from '../types/config';
 
 export type LoadBalanceStrategy = 'cartesian' | 'fallback';
@@ -17,6 +17,12 @@ export interface UnifiedLoadBalanceConfig<TCredential = any> {
   };
   strategy: LoadBalanceStrategy;
   fallbackConfig?: FallbackConfig;
+}
+
+export interface AwsLoadBalanceCredential {
+  accessKeyId: ConfigValue;
+  secretAccessKey: ConfigValue;
+  sessionToken?: ConfigValue;
 }
 
 export interface BaseAddModelOptions {
