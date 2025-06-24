@@ -96,6 +96,7 @@ export abstract class ModelBuilder<TProvider extends FluentProvider> {
     
     variations.forEach(variation => {
       const variantConfig = {
+        ...this.config, // Include all original config (including provider-specific fields)
         displayName: `${this.config.displayName}-${variation.suffix}`,
         litellmParams: {...this.config.litellmParams, ...variation.litellmParams},
         rootParams: {...this.config.rootParams, ...variation.rootParams}
