@@ -206,9 +206,9 @@ export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLo
 
 
   /**
-   * Add a model with unified load balancing across multiple dimensions
+   * Add a model with unified load balancing across multiple dimensions (internal)
    */
-  addLoadBalancedModel(options: AwsLoadBalanceOptions): this {
+  private addLoadBalancedModel(options: AwsLoadBalanceOptions): this {
     const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
 
     if (loadBalanceConfig.strategy === 'cartesian') {

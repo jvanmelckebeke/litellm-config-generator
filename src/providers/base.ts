@@ -55,8 +55,4 @@ export abstract class ProviderBuilder<TAddModelOptions extends BaseAddModelOptio
    */
   abstract executeLoadBalancedModel(options: TLoadBalanceOptions): this;
 
-  /**
-   * Add a model with unified load balancing across multiple dimensions (legacy)
-   */
-  abstract addLoadBalancedModel(options: TLoadBalanceOptions): this;
 }

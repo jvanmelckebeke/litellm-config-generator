@@ -90,9 +90,9 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
   }
 
   /**
-   * Add a Gemini model with unified load balancing
+   * Add a Gemini model with unified load balancing (internal)
    */
-  addLoadBalancedModel(options: GeminiLoadBalanceOptions): this {
+  private addLoadBalancedModel(options: GeminiLoadBalanceOptions): this {
     const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
     
     if (loadBalanceConfig.strategy !== 'cartesian') {
