@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -A 15 \"claude-3.5-haiku-load-balanced\" output/config.yaml)",
+      "Bash(grep -c \"model_name: claude-4-opus$\" output/config.yaml)"
+    ],
+    "deny": []
+  }
+}

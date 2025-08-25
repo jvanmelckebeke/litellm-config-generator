@@ -7,6 +7,7 @@ export {
   type AwsProviderOptions
 } from './providers/aws';
 export {GeminiBuilder} from './providers/gemini';
+export {AnthropicBuilder} from './providers/anthropic';
 export {LiteLLMConfigBuilder} from './config/litellm-config-builder';
 export {toConfigValue, configValueToString, env} from './types/base';
 export {

@@ -20,3 +20,4 @@ directory_content.md
 .env
 *.env
 output/
+dist/

@@ -9,7 +9,8 @@
     "start": "ts-node src/index.ts",
     "test": "jest",
     "example:main": "ts-node examples/main.ts",
-    "example:fluent": "ts-node examples/fluent-test.ts"
+    "example:fluent": "ts-node examples/fluent-test.ts",
+    "example:anthropic": "ts-node examples/anthropic-test.ts"
   },
   "keywords": [
     "litellm",

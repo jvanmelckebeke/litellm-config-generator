@@ -1,6 +1,7 @@
 import {ModelBuilder} from '../models/model-builder';
 import {AwsBedrockBuilder, AwsProviderOptions} from '../providers/aws';
 import {GeminiBuilder} from '../providers/gemini';
+import {AnthropicBuilder} from '../providers/anthropic';
 import {ConfigValue, configValueToString} from '../types/base';
 import {LiteLLMSettings, GeneralSettings, RouterSettings, LiteLLMConfig} from '../types/config';
 import * as yaml from 'js-yaml';
@@ -37,6 +38,13 @@ export class LiteLLMConfigBuilder {
    */
   createGeminiBuilder(): GeminiBuilder {
     return new GeminiBuilder(this.modelBuilder);
+  }
+
+  /**
+   * Create an Anthropic provider builder
+   */
+  createAnthropicBuilder(): AnthropicBuilder {
+    return new AnthropicBuilder(this.modelBuilder);
   }
 
   /**

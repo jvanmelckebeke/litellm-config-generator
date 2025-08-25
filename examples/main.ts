@@ -134,6 +134,7 @@ geminiBuilder.addModel({
 .withApiKeys(gemini_api_keys)
 .build();
 
+
 // Generate the config
 builder.writeToEnhancedFile('output/config.yaml');
 console.log("Configuration generated successfully!");
