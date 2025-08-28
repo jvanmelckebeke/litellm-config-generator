@@ -1,4 +1,4 @@
-import { generatedAllowedBedrockModelIdentifiers, generatedAllowedEmbeddingModelIdentifiers } from "./generated/bedrockModelIdentifiers";
+import { generatedAllowedBedrockModelIdentifiers, generatedAllowedEmbeddingModelIdentifiers } from "./generated/bedrock-model-ids";
 
 export const bedrockModelIds = generatedAllowedBedrockModelIdentifiers;
 

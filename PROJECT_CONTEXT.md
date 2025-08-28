@@ -75,7 +75,7 @@ litellm-config-generator/
 │   ├── config.yaml                  # Main configuration
 │   └── fluent-test.yaml             # Test configuration
 ├── 📁 scripts/                      # Build/utility scripts
-│   └── update-model-ids.ts
+│   └── bedrock-update-model-ids.ts
 ├── 📁 node_modules/                 # npm dependencies
 ├── package.json                     # npm configuration
 ├── tsconfig.json                    # TypeScript configuration

@@ -16,7 +16,7 @@ import * as path from 'path';
 
 // Configuration constants
 const REGIONS = ['eu-central-1', 'us-east-1'];
-const OUTPUT_FILE_PATH = path.resolve(__dirname, '../src/types/generated/bedrockModelIdentifiers.ts');
+const OUTPUT_FILE_PATH = path.resolve(__dirname, '../src/types/generated/bedrock-model-ids.ts');
 
 /**
  * Validates a given identifier.
