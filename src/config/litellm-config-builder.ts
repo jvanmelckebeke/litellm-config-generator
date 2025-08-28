@@ -18,6 +18,7 @@ export class LiteLLMConfigBuilder {
   private routerSettings?: RouterSettings;
   private environmentVariables: Record<string, string> = {};
   private includeFiles: string[] = [];
+  private providerBuilders: (AwsBedrockBuilder | GeminiBuilder | AnthropicBuilder)[] = [];
 
   /**
    * Access the underlying model builder for direct model creation
@@ -30,21 +31,27 @@ export class LiteLLMConfigBuilder {
    * Create an AWS Bedrock provider builder
    */
   createAwsBuilder(options: AwsProviderOptions): AwsBedrockBuilder {
-    return new AwsBedrockBuilder(this.modelBuilder, options);
+    const builder = new AwsBedrockBuilder(this.modelBuilder, options);
+    this.providerBuilders.push(builder);
+    return builder;
   }
 
   /**
    * Create a Gemini provider builder
    */
   createGeminiBuilder(): GeminiBuilder {
-    return new GeminiBuilder(this.modelBuilder);
+    const builder = new GeminiBuilder(this.modelBuilder);
+    this.providerBuilders.push(builder);
+    return builder;
   }
 
   /**
    * Create an Anthropic provider builder
    */
   createAnthropicBuilder(): AnthropicBuilder {
-    return new AnthropicBuilder(this.modelBuilder);
+    const builder = new AnthropicBuilder(this.modelBuilder);
+    this.providerBuilders.push(builder);
+    return builder;
   }
 
   /**
@@ -91,6 +98,12 @@ export class LiteLLMConfigBuilder {
    * Build the complete configuration
    */
   build(): LiteLLMConfig {
+    // Flush any pending auto-executions
+    this.providerBuilders.forEach(builder => {
+      if (builder instanceof AwsBedrockBuilder && 'flushPendingExecutions' in builder) {
+        builder.flushPendingExecutions();
+      }
+    });
     // Convert ConfigValue objects to strings for output
     const processedGeneralSettings = this.generalSettings ?
       Object.fromEntries(

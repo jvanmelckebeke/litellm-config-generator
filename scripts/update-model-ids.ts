@@ -16,7 +16,7 @@ import * as path from 'path';
 
 // Configuration constants
 const REGIONS = ['eu-central-1', 'us-east-1'];
-const OUTPUT_FILE_PATH = path.resolve(__dirname, '../types/bedrockModelIdentifiers.ts');
+const OUTPUT_FILE_PATH = path.resolve(__dirname, '../src/types/generated/bedrockModelIdentifiers.ts');
 
 /**
  * Validates a given identifier.
@@ -98,17 +98,13 @@ async function generateModelIdentifiersFile(
 // Generated on ${new Date().toISOString()}
 // Source: AWS Bedrock API from regions: ${REGIONS.join(', ')}
 
-export const allowedBedrockModelIdentifiers = [
+export const generatedAllowedBedrockModelIdentifiers = [
 ${uniqueLlmIds.map(id => `  '${id}',`).join('\n')}
 ] as const;
 
-export type AllowedBedrockModelId = typeof allowedBedrockModelIdentifiers[number];
-
-export const allowedEmbeddingModelIdentifiers = [
+export const generatedAllowedEmbeddingModelIdentifiers = [
 ${uniqueEmbeddingIds.map(id => `  '${id}',`).join('\n')}
 ] as const;
-
-export type AllowedEmbeddingModelId = typeof allowedEmbeddingModelIdentifiers[number];
 `;
 
   try {

@@ -58,6 +58,16 @@ export abstract class ModelBuilder<TProvider extends FluentProvider> {
   }
 
   /**
+   * Force execution of any pending auto-execution (for synchronous build operations)
+   */
+  public flushPendingExecution(): void {
+    if (!this.hasChained && this.autoExecuteTimer) {
+      this.executeSimpleModel();
+      this.hasChained = true; // Prevent duplicate execution
+    }
+  }
+
+  /**
    * Cancel auto-execution when chaining begins
    */
   protected cancelAutoExecution(): void {

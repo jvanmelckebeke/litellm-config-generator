@@ -103,7 +103,26 @@ export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLo
       region: options.region
     };
     
-    return new AwsModelBuilder(this, config);
+    const modelBuilder = new AwsModelBuilder(this, config);
+    // Track this builder for potential cleanup
+    this.trackModelBuilder(modelBuilder);
+    return modelBuilder;
+  }
+
+  private pendingModelBuilders: AwsModelBuilder[] = [];
+
+  private trackModelBuilder(builder: AwsModelBuilder): void {
+    this.pendingModelBuilders.push(builder);
+  }
+
+  /**
+   * Flush all pending auto-executions
+   */
+  flushPendingExecutions(): void {
+    this.pendingModelBuilders.forEach(builder => {
+      builder.flushPendingExecution();
+    });
+    this.pendingModelBuilders = [];
   }
 
   /**

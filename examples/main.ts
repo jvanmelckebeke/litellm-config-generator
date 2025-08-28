@@ -44,12 +44,6 @@ awsBuilder.addModel({
     region: 'eu' // Will auto-create for both regions if CRIS is supported
 });
 
-// Nova models automatically use CRIS
-awsBuilder.addModel({
-    displayName: 'nova-pro-v1',
-    modelId: 'amazon.nova-pro-v1:0',
-    region: 'eu'
-});
 
 awsBuilder.addModel({
     displayName: 'claude-3-7',
@@ -80,15 +74,15 @@ awsBuilder.addModel({
 .withThinkingVariations([1024, 16384]);
 
 awsBuilder.addModel({
-    displayName: 'claude-4-opus',
-    modelId: 'us.anthropic.claude-opus-4-20250514-v1:0',
+    displayName: 'claude-4.1-opus',
+    modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0',
     region: 'us'
 });
 
 // Claude models with thinking capability using fluent API
 awsBuilder.addModel({
-    displayName: 'claude-4-opus',
-    modelId: 'us.anthropic.claude-opus-4-20250514-v1:0'
+    displayName: 'claude-4.1-opus',
+    modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
 })
 .withRegions(['us'])
 .withThinkingVariations([1024, 16384]);
