@@ -24,9 +24,10 @@ export interface AwsLoadBalanceCredential {
 
 export type AwsRegion = 'us' | 'eu';
 
+// AWS allows custom inference profiles and endpoints, so | string is necessary for flexibility
 export interface AwsAddModelOptions extends BaseAddModelOptions {
   modelId: BedrockModelId | string;
-  region: AwsRegion;
+  region?: AwsRegion;  // Optional in fluent API, defaults to 'us'
 }
 
 export interface AwsLoadBalanceOptions extends BaseLoadBalanceOptions {
@@ -94,7 +95,7 @@ export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLo
   /**
    * Add a model with fluent interface - returns AWS-specific model builder
    */
-  addModel(options: Pick<AwsAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: string, region?: AwsRegion}): AwsModelBuilder {
+  addModel(options: AwsAddModelOptions): AwsModelBuilder {
     const config: ModelConfig & {modelId: string, region?: AwsRegion} = {
       displayName: options.displayName,
       litellmParams: options.litellmParams,
@@ -154,7 +155,8 @@ export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLo
    * Add basic Bedrock model with AWS authentication (internal method)
    */
   private addBasicModel(options: AwsAddModelOptions): this {
-    const {displayName, modelId, region, litellmParams = {}, rootParams = {}} = options;
+    const {displayName, modelId, litellmParams = {}, rootParams = {}} = options;
+    const region = options.region || 'us' as AwsRegion;  // Default to 'us' if not provided
     const regionVar = this.options.defaultRegionMap[region];
 
     // Determine if we should use CRIS

@@ -11,13 +11,15 @@ import {
 import {OpenRouterModelBuilder} from '../builders/openrouter-model-builder';
 import {ModelConfig} from '../builders/model-builder';
 
+// OpenRouter uses standardized model slugs, so we enforce strict typing
 export interface OpenRouterAddModelOptions extends BaseAddModelOptions {
-  modelId: OpenRouterModelId | string;
-  apiKey: ConfigValue;
+  modelId: OpenRouterModelId;
+  apiKey?: ConfigValue;  // Optional in fluent API, can be added later
 }
 
+// OpenRouter uses standardized model slugs, so we enforce strict typing
 export interface OpenRouterLoadBalanceOptions extends BaseLoadBalanceOptions {
-  modelId: OpenRouterModelId | string;
+  modelId: OpenRouterModelId;
 }
 
 /**
@@ -31,7 +33,7 @@ export class OpenRouterBuilder extends ProviderBuilder<OpenRouterAddModelOptions
   /**
    * Add a model with fluent interface - returns OpenRouter-specific model builder
    */
-  addModel(options: Pick<OpenRouterAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: OpenRouterModelId | string, apiKey?: ConfigValue}): OpenRouterModelBuilder {
+  addModel(options: OpenRouterAddModelOptions): OpenRouterModelBuilder {
     const config: ModelConfig & {modelId: OpenRouterModelId | string, apiKey?: ConfigValue} = {
       displayName: options.displayName,
       litellmParams: options.litellmParams,
@@ -46,7 +48,7 @@ export class OpenRouterBuilder extends ProviderBuilder<OpenRouterAddModelOptions
   /**
    * Execute a simple model (called by ModelBuilder)
    */
-  executeModel(config: ModelConfig & {modelId?: OpenRouterModelId | string, apiKey?: ConfigValue}): this {
+  executeModel(config: ModelConfig & {modelId?: OpenRouterModelId, apiKey?: ConfigValue}): this {
     if (!config.modelId) {
       throw new Error('modelId is required for OpenRouter models');
     }
@@ -76,6 +78,10 @@ export class OpenRouterBuilder extends ProviderBuilder<OpenRouterAddModelOptions
    */
   private addBasicModel(options: OpenRouterAddModelOptions): this {
     const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = options;
+    
+    if (!apiKey) {
+      throw new Error('apiKey is required for OpenRouter models');
+    }
 
     this.modelBuilder.addModel({
       modelName: displayName,

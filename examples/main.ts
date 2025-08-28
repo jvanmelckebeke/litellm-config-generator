@@ -129,6 +129,16 @@ geminiBuilder.addModel({
     .withApiKeys(gemini_api_keys)
     .build();
 
+// openrouter builder
+const openrouterBuilder = builder.createOpenRouterBuilder();
+
+openrouterBuilder.addModel({
+    displayName: 'grok-4',
+    modelId: 'x-ai/grok-4',
+    apiKey: env('OPENROUTER_API_KEY')
+})
+.build();
+
 
 // Generate the config
 builder.writeToEnhancedFile('output/config.yaml');

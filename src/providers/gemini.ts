@@ -12,7 +12,7 @@ import {ModelConfig} from '../builders/model-builder';
 
 export interface GeminiAddModelOptions extends BaseAddModelOptions {
   modelId: string;
-  apiKey: ConfigValue;
+  apiKey?: ConfigValue;  // Optional in fluent API, can be added later
 }
 
 export interface GeminiLoadBalanceOptions extends BaseLoadBalanceOptions {
@@ -30,7 +30,7 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
   /**
    * Add a model with fluent interface - returns Gemini-specific model builder
    */
-  addModel(options: Pick<GeminiAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: string, apiKey?: ConfigValue}): GeminiModelBuilder {
+  addModel(options: GeminiAddModelOptions): GeminiModelBuilder {
     const config: ModelConfig & {modelId: string, apiKey?: ConfigValue} = {
       displayName: options.displayName,
       litellmParams: options.litellmParams,
@@ -75,6 +75,10 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
    */
   private addBasicModel(options: GeminiAddModelOptions): this {
     const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = options;
+    
+    if (!apiKey) {
+      throw new Error('apiKey is required for Gemini models');
+    }
 
     this.modelBuilder.addModel({
       modelName: displayName,

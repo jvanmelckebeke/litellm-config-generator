@@ -43,7 +43,7 @@ export abstract class ProviderBuilder<TAddModelOptions extends BaseAddModelOptio
   /**
    * Add a model with fluent interface - returns provider-specific model builder
    */
-  abstract addModel(options: Pick<TAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & Record<string, any>): any;
+  abstract addModel(options: TAddModelOptions): any;
 
   /**
    * Execute a simple model (called by ModelBuilder)
