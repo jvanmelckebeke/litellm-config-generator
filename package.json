@@ -10,7 +10,8 @@
     "test": "jest",
     "example:main": "ts-node examples/main.ts",
     "example:fluent": "ts-node examples/fluent-test.ts",
-    "example:anthropic": "ts-node examples/anthropic-test.ts"
+    "example:anthropic": "ts-node examples/anthropic-test.ts",
+    "example:openrouter": "ts-node examples/openrouter-test.ts"
   },
   "keywords": [
     "litellm",

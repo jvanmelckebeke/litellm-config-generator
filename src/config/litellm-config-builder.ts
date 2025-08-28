@@ -2,6 +2,7 @@ import {ModelBuilder} from '../models/model-builder';
 import {AwsBedrockBuilder, AwsProviderOptions} from '../providers/aws';
 import {GeminiBuilder} from '../providers/gemini';
 import {AnthropicBuilder} from '../providers/anthropic';
+import {OpenRouterBuilder} from '../providers/openrouter';
 import {ConfigValue, configValueToString} from '../types/base';
 import {LiteLLMSettings, GeneralSettings, RouterSettings, LiteLLMConfig} from '../types/config';
 import * as yaml from 'js-yaml';
@@ -18,7 +19,7 @@ export class LiteLLMConfigBuilder {
   private routerSettings?: RouterSettings;
   private environmentVariables: Record<string, string> = {};
   private includeFiles: string[] = [];
-  private providerBuilders: (AwsBedrockBuilder | GeminiBuilder | AnthropicBuilder)[] = [];
+  private providerBuilders: (AwsBedrockBuilder | GeminiBuilder | AnthropicBuilder | OpenRouterBuilder)[] = [];
 
   /**
    * Access the underlying model builder for direct model creation
@@ -50,6 +51,15 @@ export class LiteLLMConfigBuilder {
    */
   createAnthropicBuilder(): AnthropicBuilder {
     const builder = new AnthropicBuilder(this.modelBuilder);
+    this.providerBuilders.push(builder);
+    return builder;
+  }
+
+  /**
+   * Create an OpenRouter provider builder
+   */
+  createOpenRouterBuilder(): OpenRouterBuilder {
+    const builder = new OpenRouterBuilder(this.modelBuilder);
     this.providerBuilders.push(builder);
     return builder;
   }
