@@ -1,10 +1,11 @@
 // examples/main.ts
-import {LiteLLMConfigBuilder, env, BedrockModelId} from '../src';
+import { LiteLLMConfigBuilder, env, BedrockModelId } from '../src';
 
 // Create the main config builder
 const builder = new LiteLLMConfigBuilder()
     .withLiteLLMSettings({
         drop_params: true,
+        success_callback: ["langfuse"]
     })
     .withGeneralSettings({
         master_key: env('LITELLM_MASTER_KEY'),
@@ -56,8 +57,8 @@ awsBuilder.addModel({
     displayName: 'claude-3-7',
     modelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0'
 })
-.withRegions(['eu'])
-.withThinkingVariations([1024, 16384]);
+    .withRegions(['eu'])
+    .withThinkingVariations([1024, 16384]);
 
 awsBuilder.addModel({
     displayName: 'claude-4-sonnet',
@@ -70,8 +71,8 @@ awsBuilder.addModel({
     displayName: 'claude-4-sonnet',
     modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 })
-.withRegions(['us'])
-.withThinkingVariations([1024, 16384]);
+    .withRegions(['us'])
+    .withThinkingVariations([1024, 16384]);
 
 awsBuilder.addModel({
     displayName: 'claude-4.1-opus',
@@ -84,8 +85,8 @@ awsBuilder.addModel({
     displayName: 'claude-4.1-opus',
     modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
 })
-.withRegions(['us'])
-.withThinkingVariations([1024, 16384]);
+    .withRegions(['us'])
+    .withThinkingVariations([1024, 16384]);
 // Create the Gemini builder
 const geminiBuilder = builder.createGeminiBuilder();
 
@@ -100,33 +101,33 @@ const gemini_api_keys = [
 geminiBuilder.addModel({
     displayName: 'gemini-2.0-flash',
     modelId: 'gemini-2.0-flash',
-    rootParams: {rpm: 15}
+    rootParams: { rpm: 15 }
 })
-.withApiKeys(gemini_api_keys)
-.build();
+    .withApiKeys(gemini_api_keys)
+    .build();
 
 geminiBuilder.addModel({
     displayName: 'gemini-2.0-flash-lite',
     modelId: 'gemini-2.0-flash-lite',
-    rootParams: {rpm: 30}
+    rootParams: { rpm: 30 }
 })
-.withApiKeys(gemini_api_keys)
-.build();
+    .withApiKeys(gemini_api_keys)
+    .build();
 
 geminiBuilder.addModel({
     displayName: 'gemini-2.5-flash',
     modelId: 'gemini-2.5-flash-preview-05-20',
-    rootParams: {rpm: 10}
+    rootParams: { rpm: 10 }
 })
-.withApiKeys(gemini_api_keys)
-.build();
+    .withApiKeys(gemini_api_keys)
+    .build();
 
 geminiBuilder.addModel({
     displayName: 'text-embedding-004',
     modelId: 'text-embedding-004'
 })
-.withApiKeys(gemini_api_keys)
-.build();
+    .withApiKeys(gemini_api_keys)
+    .build();
 
 
 // Generate the config
