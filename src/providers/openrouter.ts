@@ -1,6 +1,7 @@
 import {ModelBuilder} from '../models/model-builder';
 import {ConfigValue, LoadBalanceConfig, ApiKeyCredential} from '../types/base';
 import {ModelParams} from '../types/config';
+import {OpenRouterModelId} from '../types/models';
 import {
   ProviderBuilder,
   UnifiedLoadBalanceConfig,
@@ -11,12 +12,12 @@ import {OpenRouterModelBuilder} from '../builders/openrouter-model-builder';
 import {ModelConfig} from '../builders/model-builder';
 
 export interface OpenRouterAddModelOptions extends BaseAddModelOptions {
-  modelId: string;
+  modelId: OpenRouterModelId | string;
   apiKey: ConfigValue;
 }
 
 export interface OpenRouterLoadBalanceOptions extends BaseLoadBalanceOptions {
-  modelId: string;
+  modelId: OpenRouterModelId | string;
 }
 
 /**
@@ -30,8 +31,8 @@ export class OpenRouterBuilder extends ProviderBuilder<OpenRouterAddModelOptions
   /**
    * Add a model with fluent interface - returns OpenRouter-specific model builder
    */
-  addModel(options: Pick<OpenRouterAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: string, apiKey?: ConfigValue}): OpenRouterModelBuilder {
-    const config: ModelConfig & {modelId: string, apiKey?: ConfigValue} = {
+  addModel(options: Pick<OpenRouterAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: OpenRouterModelId | string, apiKey?: ConfigValue}): OpenRouterModelBuilder {
+    const config: ModelConfig & {modelId: OpenRouterModelId | string, apiKey?: ConfigValue} = {
       displayName: options.displayName,
       litellmParams: options.litellmParams,
       rootParams: options.rootParams,
@@ -45,7 +46,7 @@ export class OpenRouterBuilder extends ProviderBuilder<OpenRouterAddModelOptions
   /**
    * Execute a simple model (called by ModelBuilder)
    */
-  executeModel(config: ModelConfig & {modelId?: string, apiKey?: ConfigValue}): this {
+  executeModel(config: ModelConfig & {modelId?: OpenRouterModelId | string, apiKey?: ConfigValue}): this {
     if (!config.modelId) {
       throw new Error('modelId is required for OpenRouter models');
     }

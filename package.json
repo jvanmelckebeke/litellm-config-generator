@@ -9,6 +9,7 @@
     "start": "ts-node src/index.ts",
     "test": "jest",
     "update:bedrock": "ts-node scripts/bedrock-update-model-ids.ts",
+    "update:openrouter": "ts-node scripts/openrouter-update-model-ids.ts",
     "example:main": "ts-node examples/main.ts",
     "example:fluent": "ts-node examples/fluent-test.ts",
     "example:anthropic": "ts-node examples/anthropic-test.ts",

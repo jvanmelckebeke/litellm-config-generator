@@ -1,8 +1,11 @@
 import { generatedAllowedBedrockModelIdentifiers, generatedAllowedEmbeddingModelIdentifiers } from "./generated/bedrock-model-ids";
+import { generatedAllowedOpenRouterModelIdentifiers } from "./generated/openrouter-model-ids";
 
 export const bedrockModelIds = generatedAllowedBedrockModelIdentifiers;
+export const openRouterModelIds = generatedAllowedOpenRouterModelIdentifiers;
 
 export type BedrockModelId = typeof generatedAllowedBedrockModelIdentifiers[number];
+export type OpenRouterModelId = typeof generatedAllowedOpenRouterModelIdentifiers[number];
 
 /**
  * Utility type that extracts the base model ID without the region prefix

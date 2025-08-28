@@ -1,5 +1,5 @@
 // examples/openrouter-test.ts
-import { LiteLLMConfigBuilder, env } from '../src';
+import { LiteLLMConfigBuilder, env, OpenRouterModelId } from '../src';
 
 // Create the main config builder
 const builder = new LiteLLMConfigBuilder()

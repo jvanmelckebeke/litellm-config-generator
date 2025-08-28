@@ -13,7 +13,9 @@ export {LiteLLMConfigBuilder} from './config/litellm-config-builder';
 export {toConfigValue, configValueToString, env} from './types/base';
 export {
   bedrockModelIds,
+  openRouterModelIds,
   type BedrockModelId,
+  type OpenRouterModelId,
   supportsCRIS,
   getRegionalModelId
 } from './types/models';
