@@ -1,4 +1,5 @@
-import {LiteLLMConfig, ModelDefinition} from '../types/config';
+import {LiteLLMConfig} from '../types/config';
+import {ModelDefinition} from '../types/model';
 import {configValueToString} from '../types/base';
 import * as fs from 'fs';
 

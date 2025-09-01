@@ -20,12 +20,14 @@ export {
   getRegionalModelId
 } from './types/models';
 export type {ConfigValue, EnvironmentRef, StringValue} from './types/base';
+export type {LiteLLMConfig} from './types/config';
 export type {
   LiteLLMSettings,
   GeneralSettings,
-  RouterSettings,
+  RouterSettings
+} from './types/settings';
+export type {
   ModelDefinition,
-  ModelParams,
-  CacheControlInjectionPoint,
-  LiteLLMConfig
-} from './types/config';
+  ModelParams
+} from './types/model';
+export type {CacheControlInjectionPoint} from './types/cache';

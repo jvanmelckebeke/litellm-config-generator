@@ -1,6 +1,6 @@
 import {ModelBuilder} from '../models/model-builder';
 import {ConfigValue, LoadBalanceConfig, ApiKeyCredential} from '../types/base';
-import {ModelParams} from '../types/config';
+import {ModelParams} from '../types/model';
 import {OpenRouterModelId} from '../types/models';
 import {
   ProviderBuilder,

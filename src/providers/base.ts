@@ -1,5 +1,5 @@
 import {ModelBuilder} from '../models/model-builder';
-import {ModelParams} from '../types/config';
+import {ModelParams} from '../types/model';
 import type {ModelConfig} from '../builders/model-builder';
 
 export type LoadBalanceStrategy = 'cartesian' | 'fallback';

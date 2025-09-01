@@ -1,4 +1,4 @@
-import {ModelParams, ModelDefinition} from '../types/config';
+import {ModelParams, ModelDefinition} from '../types/model';
 import {LoadBalanceConfig, ConfigValue} from '../types/base';
 
 /**

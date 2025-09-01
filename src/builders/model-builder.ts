@@ -1,4 +1,4 @@
-import {ModelParams} from '../types/config';
+import {ModelParams} from '../types/model';
 import {UnifiedLoadBalanceConfig, LoadBalanceStrategy, FallbackConfig} from '../providers/base';
 
 /**

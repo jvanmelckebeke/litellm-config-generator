@@ -1,6 +1,6 @@
 import {ModelBuilder} from '../models/model-builder';
 import {ConfigValue, LoadBalanceConfig} from '../types/base';
-import {ModelParams} from '../types/config';
+import {ModelParams} from '../types/model';
 import {
   BedrockModelId,
   supportsCRIS,

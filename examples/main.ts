@@ -137,7 +137,7 @@ openrouterBuilder.addModel({
     modelId: 'x-ai/grok-4',
     apiKey: env('OPENROUTER_API_KEY')
 })
-.build();
+    .build();
 
 
 // Generate the config
