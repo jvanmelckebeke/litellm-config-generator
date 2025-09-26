@@ -84,9 +84,17 @@ awsBuilder.addModel({
 awsBuilder.addModel({
     displayName: 'claude-4.1-opus',
     modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
-})
+});
     .withRegions(['us'])
     .withThinkingVariations([1024, 16384]);
+
+awsBuilder.addModel({
+    displayName: 'pegasus-1.2',
+    modelId: 'us.twelvelabs.pegasus-1-2-v1:0',
+    region: 'us'
+});
+
+
 // Create the Gemini builder
 const geminiBuilder = builder.createGeminiBuilder();
 
@@ -135,6 +143,13 @@ const openrouterBuilder = builder.createOpenRouterBuilder();
 openrouterBuilder.addModel({
     displayName: 'grok-4',
     modelId: 'x-ai/grok-4',
+    apiKey: env('OPENROUTER_API_KEY')
+})
+    .build();
+
+openrouterBuilder.addModel({
+    displayName: 'grok-4-fast',
+    modelId: 'x-ai/grok-4-fast',
     apiKey: env('OPENROUTER_API_KEY')
 })
     .build();

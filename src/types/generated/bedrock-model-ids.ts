@@ -1,11 +1,10 @@
 // Auto-generated file. Do not edit manually.
-// Generated on 2025-08-25T11:27:57.052Z
+// Generated on 2025-09-26T09:11:29.956Z
 // Source: AWS Bedrock API from regions: eu-central-1, us-east-1
 
 export const generatedAllowedBedrockModelIdentifiers = [
   'ai21.jamba-1-5-large-v1:0',
   'ai21.jamba-1-5-mini-v1:0',
-  'ai21.jamba-instruct-v1:0',
   'amazon.nova-lite-v1:0',
   'amazon.nova-micro-v1:0',
   'amazon.nova-pro-v1:0',
@@ -13,14 +12,10 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'amazon.rerank-v1:0',
   'amazon.titan-text-express-v1',
   'amazon.titan-text-lite-v1',
-  'amazon.titan-text-premier-v1:0',
   'amazon.titan-tg1-large',
   'anthropic.claude-3-5-sonnet-20240620-v1:0',
   'anthropic.claude-3-haiku-20240307-v1:0',
   'anthropic.claude-3-sonnet-20240229-v1:0',
-  'anthropic.claude-instant-v1',
-  'anthropic.claude-v2',
-  'anthropic.claude-v2:1',
   'cohere.command-r-plus-v1:0',
   'cohere.command-r-v1:0',
   'cohere.rerank-v3-5:0',
@@ -35,12 +30,17 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'eu.meta.llama3-2-1b-instruct-v1:0',
   'eu.meta.llama3-2-3b-instruct-v1:0',
   'eu.mistral.pixtral-large-2502-v1:0',
+  'global.anthropic.claude-sonnet-4-20250514-v1:0',
   'meta.llama3-70b-instruct-v1:0',
   'meta.llama3-8b-instruct-v1:0',
   'mistral.mistral-7b-instruct-v0:2',
   'mistral.mistral-large-2402-v1:0',
   'mistral.mistral-small-2402-v1:0',
   'mistral.mixtral-8x7b-instruct-v0:1',
+  'openai.gpt-oss-120b-1:0',
+  'openai.gpt-oss-20b-1:0',
+  'qwen.qwen3-32b-v1:0',
+  'qwen.qwen3-coder-30b-a3b-v1:0',
   'us.amazon.nova-lite-v1:0',
   'us.amazon.nova-micro-v1:0',
   'us.amazon.nova-premier-v1:0',
@@ -66,6 +66,16 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'us.meta.llama4-maverick-17b-instruct-v1:0',
   'us.meta.llama4-scout-17b-instruct-v1:0',
   'us.mistral.pixtral-large-2502-v1:0',
+  'us.stability.stable-image-control-sketch-v1:0',
+  'us.stability.stable-image-control-structure-v1:0',
+  'us.stability.stable-image-erase-object-v1:0',
+  'us.stability.stable-image-inpaint-v1:0',
+  'us.stability.stable-image-remove-background-v1:0',
+  'us.stability.stable-image-search-recolor-v1:0',
+  'us.stability.stable-image-search-replace-v1:0',
+  'us.stability.stable-image-style-guide-v1:0',
+  'us.stability.stable-style-transfer-v1:0',
+  'us.twelvelabs.marengo-embed-2-7-v1:0',
   'us.twelvelabs.pegasus-1-2-v1:0',
 ] as const;
 
