@@ -66,13 +66,37 @@ awsBuilder.addModel({
     region: 'us'
 });
 
-// Claude models with thinking capability using fluent API
+awsBuilder.addModel({
+    displayName: 'claude-4-sonnet',
+    modelId: 'global.anthropic.claude-sonnet-4-20250514-v1:0',
+    region: 'us'
+});
+
 awsBuilder.addModel({
     displayName: 'claude-4-sonnet',
     modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 })
     .withRegions(['us'])
-    .withThinkingVariations([1024, 16384]);
+    .withThinkingVariations([1024]);
+
+awsBuilder.addModel({
+    displayName: 'claude-4-sonnet',
+    modelId: 'global.anthropic.claude-sonnet-4-20250514-v1:0',
+    region: 'us'
+})
+    .withThinkingVariations([1024]);
+
+awsBuilder.addModel({
+    displayName: 'claude-4.5-sonnet',
+    modelId: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',
+    region: 'eu'
+});
+
+awsBuilder.addModel({
+    displayName: 'claude-4.5-sonnet',
+    modelId: 'global.anthropic.claude-sonnet-4-5-20250929-v1:0'
+})
+
 
 awsBuilder.addModel({
     displayName: 'claude-4.1-opus',
@@ -80,13 +104,12 @@ awsBuilder.addModel({
     region: 'us'
 });
 
-// Claude models with thinking capability using fluent API
 awsBuilder.addModel({
     displayName: 'claude-4.1-opus',
     modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
-});
+})
     .withRegions(['us'])
-    .withThinkingVariations([1024, 16384]);
+    .withThinkingVariations([1024]);
 
 awsBuilder.addModel({
     displayName: 'pegasus-1.2',

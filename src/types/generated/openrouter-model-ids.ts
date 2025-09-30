@@ -1,5 +1,5 @@
 // Auto-generated file. Do not edit manually.
-// Generated on 2025-09-26T09:10:20.292Z
+// Generated on 2025-09-30T08:50:40.788Z
 // Source: OpenRouter API (https://openrouter.ai/api/frontend/models)
 
 export const generatedAllowedOpenRouterModelIdentifiers = [
@@ -57,6 +57,7 @@ export const generatedAllowedOpenRouterModelIdentifiers = [
   'anthropic/claude-opus-4',
   'anthropic/claude-opus-4.1',
   'anthropic/claude-sonnet-4',
+  'anthropic/claude-sonnet-4.5',
   'arcee-ai/afm-4.5b',
   'arcee-ai/arcee-blitz',
   'arcee-ai/caller-large',
@@ -111,6 +112,7 @@ export const generatedAllowedOpenRouterModelIdentifiers = [
   'deepseek/deepseek-v3-base',
   'deepseek/deepseek-v3.1-base',
   'deepseek/deepseek-v3.1-terminus',
+  'deepseek/deepseek-v3.2-exp',
   'eleutherai/llemma_7b',
   'eva-unit-01/eva-llama-3.33-70b',
   'eva-unit-01/eva-qwen-2.5-14b',
@@ -417,6 +419,7 @@ export const generatedAllowedOpenRouterModelIdentifiers = [
   'recursal/eagle-7b',
   'recursal/rwkv-5-3b-ai-town',
   'rekaai/reka-flash-3',
+  'relace/relace-apply-3',
   'rwkv/rwkv-5-world-3b',
   'sao10k/fimbulvetr-11b-v2',
   'sao10k/l3-euryale-70b',
@@ -440,6 +443,7 @@ export const generatedAllowedOpenRouterModelIdentifiers = [
   'tencent/hunyuan-a13b-instruct',
   'thedrummer/anubis-70b-v1.1',
   'thedrummer/anubis-pro-105b-v1',
+  'thedrummer/cydonia-24b-v4.1',
   'thedrummer/rocinante-12b',
   'thedrummer/skyfall-36b-v2',
   'thedrummer/unslopnemo-12b',

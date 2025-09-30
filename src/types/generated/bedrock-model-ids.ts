@@ -1,5 +1,5 @@
 // Auto-generated file. Do not edit manually.
-// Generated on 2025-09-26T09:11:29.956Z
+// Generated on 2025-09-30T08:50:29.150Z
 // Source: AWS Bedrock API from regions: eu-central-1, us-east-1
 
 export const generatedAllowedBedrockModelIdentifiers = [
@@ -27,10 +27,12 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'eu.anthropic.claude-3-haiku-20240307-v1:0',
   'eu.anthropic.claude-3-sonnet-20240229-v1:0',
   'eu.anthropic.claude-sonnet-4-20250514-v1:0',
+  'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',
   'eu.meta.llama3-2-1b-instruct-v1:0',
   'eu.meta.llama3-2-3b-instruct-v1:0',
   'eu.mistral.pixtral-large-2502-v1:0',
   'global.anthropic.claude-sonnet-4-20250514-v1:0',
+  'global.anthropic.claude-sonnet-4-5-20250929-v1:0',
   'meta.llama3-70b-instruct-v1:0',
   'meta.llama3-8b-instruct-v1:0',
   'mistral.mistral-7b-instruct-v0:2',
@@ -55,6 +57,7 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'us.anthropic.claude-opus-4-1-20250805-v1:0',
   'us.anthropic.claude-opus-4-20250514-v1:0',
   'us.anthropic.claude-sonnet-4-20250514-v1:0',
+  'us.anthropic.claude-sonnet-4-5-20250929-v1:0',
   'us.deepseek.r1-v1:0',
   'us.meta.llama3-1-70b-instruct-v1:0',
   'us.meta.llama3-1-8b-instruct-v1:0',
