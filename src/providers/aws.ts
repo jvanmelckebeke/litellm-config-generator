@@ -42,17 +42,23 @@ export interface AwsProviderOptions {
   detectCRIS?: boolean; // Auto-detect CRIS support
 }
 
+// Define what can be defaulted (exclude modelId - must be per-model)
+export type AwsDefaults = Partial<Omit<AwsAddModelOptions, 'modelId'>>;
 
 /**
  * Specialized builder for AWS Bedrock models with cross-region support
  */
-export class AwsBedrockBuilder extends ProviderBuilder<AwsAddModelOptions, AwsLoadBalanceOptions> {
+export class AwsBedrockBuilder extends ProviderBuilder<
+  AwsAddModelOptions,
+  AwsLoadBalanceOptions,
+  AwsDefaults
+> {
   private options: AwsProviderOptions;
   private fallbacks: Array<Record<string, string[]>> = [];
   private cacheControlRoles?: string[];
 
-  constructor(modelBuilder: ModelBuilder, options: AwsProviderOptions) {
-    super(modelBuilder);
+  constructor(modelBuilder: ModelBuilder, options: AwsProviderOptions, defaults?: AwsDefaults) {
+    super(modelBuilder, defaults);
     this.options = {
       detectCRIS: true, // Enable CRIS detection by default
       ...options

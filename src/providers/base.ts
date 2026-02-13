@@ -33,11 +33,68 @@ export interface BaseLoadBalanceOptions extends BaseAddModelOptions {
 /**
  * Abstract base class for provider builders with type-safe provider-specific extensions
  */
-export abstract class ProviderBuilder<TAddModelOptions extends BaseAddModelOptions = BaseAddModelOptions, TLoadBalanceOptions extends BaseLoadBalanceOptions = BaseLoadBalanceOptions> {
+export abstract class ProviderBuilder<
+  TAddModelOptions extends BaseAddModelOptions = BaseAddModelOptions,
+  TLoadBalanceOptions extends BaseLoadBalanceOptions = BaseLoadBalanceOptions,
+  TDefaults extends Partial<TAddModelOptions> = Partial<TAddModelOptions>
+> {
   protected modelBuilder: ModelBuilder;
+  protected defaults?: TDefaults;
 
-  constructor(modelBuilder: ModelBuilder) {
+  constructor(modelBuilder: ModelBuilder, defaults?: TDefaults) {
     this.modelBuilder = modelBuilder;
+    this.defaults = defaults;
+  }
+
+  /**
+   * Set or update provider-level defaults (fluent method)
+   */
+  withDefaults(defaults: TDefaults): this {
+    this.defaults = this.mergeDefaults(this.defaults, defaults);
+    return this;
+  }
+
+  /**
+   * Deep merge defaults with model-specific options
+   */
+  protected applyDefaults<T extends TAddModelOptions>(options: T): T {
+    if (!this.defaults) {
+      return options;
+    }
+
+    return {
+      ...this.defaults,
+      ...options,
+      // Deep merge for nested objects
+      litellmParams: {
+        ...this.defaults.litellmParams,
+        ...options.litellmParams
+      },
+      rootParams: {
+        ...this.defaults.rootParams,
+        ...options.rootParams
+      }
+    } as T;
+  }
+
+  /**
+   * Merge two defaults objects (for withDefaults() chaining)
+   */
+  private mergeDefaults(existing: TDefaults | undefined, updates: TDefaults): TDefaults {
+    if (!existing) return updates;
+
+    return {
+      ...existing,
+      ...updates,
+      litellmParams: {
+        ...existing.litellmParams,
+        ...updates.litellmParams
+      },
+      rootParams: {
+        ...existing.rootParams,
+        ...updates.rootParams
+      }
+    } as TDefaults;
   }
 
   /**

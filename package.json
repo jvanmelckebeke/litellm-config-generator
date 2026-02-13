@@ -13,7 +13,8 @@
     "example:main": "ts-node examples/main.ts",
     "example:fluent": "ts-node examples/fluent-test.ts",
     "example:anthropic": "ts-node examples/anthropic-test.ts",
-    "example:openrouter": "ts-node examples/openrouter-test.ts"
+    "example:openrouter": "ts-node examples/openrouter-test.ts",
+    "example:openai-compatible": "ts-node examples/openai-compatible-test.ts"
   },
   "keywords": [
     "litellm",

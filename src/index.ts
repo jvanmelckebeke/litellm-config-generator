@@ -9,6 +9,7 @@ export {
 export {GeminiBuilder} from './providers/gemini';
 export {AnthropicBuilder} from './providers/anthropic';
 export {OpenRouterBuilder} from './providers/openrouter';
+export {OpenAICompatibleBuilder} from './providers/openai-compatible';
 export {LiteLLMConfigBuilder} from './config/litellm-config-builder';
 export {toConfigValue, configValueToString, env} from './types/base';
 export {

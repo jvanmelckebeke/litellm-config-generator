@@ -1,8 +1,9 @@
 import {ModelBuilder} from '../models/model-builder';
-import {AwsBedrockBuilder, AwsProviderOptions} from '../providers/aws';
-import {GeminiBuilder} from '../providers/gemini';
-import {AnthropicBuilder} from '../providers/anthropic';
-import {OpenRouterBuilder} from '../providers/openrouter';
+import {AwsBedrockBuilder, AwsProviderOptions, AwsDefaults} from '../providers/aws';
+import {GeminiBuilder, GeminiDefaults} from '../providers/gemini';
+import {AnthropicBuilder, AnthropicDefaults} from '../providers/anthropic';
+import {OpenRouterBuilder, OpenRouterDefaults} from '../providers/openrouter';
+import {OpenAICompatibleBuilder, OpenAICompatibleDefaults, OpenAICompatibleProviderOptions} from '../providers/openai-compatible';
 import {ConfigValue, configValueToString} from '../types/base';
 import {LiteLLMConfig} from '../types/config';
 import {LiteLLMSettings, GeneralSettings, RouterSettings} from '../types/settings';
@@ -20,7 +21,7 @@ export class LiteLLMConfigBuilder {
   private routerSettings?: RouterSettings;
   private environmentVariables: Record<string, string> = {};
   private includeFiles: string[] = [];
-  private providerBuilders: (AwsBedrockBuilder | GeminiBuilder | AnthropicBuilder | OpenRouterBuilder)[] = [];
+  private providerBuilders: (AwsBedrockBuilder | GeminiBuilder | AnthropicBuilder | OpenRouterBuilder | OpenAICompatibleBuilder)[] = [];
 
   /**
    * Access the underlying model builder for direct model creation
@@ -32,8 +33,8 @@ export class LiteLLMConfigBuilder {
   /**
    * Create an AWS Bedrock provider builder
    */
-  createAwsBuilder(options: AwsProviderOptions): AwsBedrockBuilder {
-    const builder = new AwsBedrockBuilder(this.modelBuilder, options);
+  createAwsBuilder(options: AwsProviderOptions, defaults?: AwsDefaults): AwsBedrockBuilder {
+    const builder = new AwsBedrockBuilder(this.modelBuilder, options, defaults);
     this.providerBuilders.push(builder);
     return builder;
   }
@@ -41,8 +42,8 @@ export class LiteLLMConfigBuilder {
   /**
    * Create a Gemini provider builder
    */
-  createGeminiBuilder(): GeminiBuilder {
-    const builder = new GeminiBuilder(this.modelBuilder);
+  createGeminiBuilder(defaults?: GeminiDefaults): GeminiBuilder {
+    const builder = new GeminiBuilder(this.modelBuilder, defaults);
     this.providerBuilders.push(builder);
     return builder;
   }
@@ -50,8 +51,8 @@ export class LiteLLMConfigBuilder {
   /**
    * Create an Anthropic provider builder
    */
-  createAnthropicBuilder(): AnthropicBuilder {
-    const builder = new AnthropicBuilder(this.modelBuilder);
+  createAnthropicBuilder(defaults?: AnthropicDefaults): AnthropicBuilder {
+    const builder = new AnthropicBuilder(this.modelBuilder, defaults);
     this.providerBuilders.push(builder);
     return builder;
   }
@@ -59,8 +60,17 @@ export class LiteLLMConfigBuilder {
   /**
    * Create an OpenRouter provider builder
    */
-  createOpenRouterBuilder(): OpenRouterBuilder {
-    const builder = new OpenRouterBuilder(this.modelBuilder);
+  createOpenRouterBuilder(defaults?: OpenRouterDefaults): OpenRouterBuilder {
+    const builder = new OpenRouterBuilder(this.modelBuilder, defaults);
+    this.providerBuilders.push(builder);
+    return builder;
+  }
+
+  /**
+   * Create an OpenAI-compatible provider builder for custom endpoints (vLLM, Ollama, etc.)
+   */
+  createOpenAICompatibleBuilder(options?: OpenAICompatibleProviderOptions, defaults?: OpenAICompatibleDefaults): OpenAICompatibleBuilder {
+    const builder = new OpenAICompatibleBuilder(this.modelBuilder, options, defaults);
     this.providerBuilders.push(builder);
     return builder;
   }

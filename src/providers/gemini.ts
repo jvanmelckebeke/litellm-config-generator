@@ -19,12 +19,19 @@ export interface GeminiLoadBalanceOptions extends BaseLoadBalanceOptions {
   modelId: string;
 }
 
+// Define what can be defaulted (exclude modelId - must be per-model)
+export type GeminiDefaults = Partial<Omit<GeminiAddModelOptions, 'modelId'>>;
+
 /**
  * Specialized builder for Google Gemini models
  */
-export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, GeminiLoadBalanceOptions> {
-  constructor(modelBuilder: ModelBuilder) {
-    super(modelBuilder);
+export class GeminiBuilder extends ProviderBuilder<
+  GeminiAddModelOptions,
+  GeminiLoadBalanceOptions,
+  GeminiDefaults
+> {
+  constructor(modelBuilder: ModelBuilder, defaults?: GeminiDefaults) {
+    super(modelBuilder, defaults);
   }
 
   /**
@@ -49,15 +56,18 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
     if (!config.modelId) {
       throw new Error('modelId is required for Gemini models');
     }
-    
-    if (!config.apiKey) {
+
+    // Use apiKey from config or defaults
+    const apiKey = config.apiKey || this.defaults?.apiKey;
+
+    if (!apiKey) {
       throw new Error('apiKey is required for simple Gemini models');
     }
-    
+
     return this.addBasicModel({
       displayName: config.displayName,
       modelId: config.modelId,
-      apiKey: config.apiKey,
+      apiKey: apiKey,
       litellmParams: config.litellmParams,
       rootParams: config.rootParams
     });
@@ -74,7 +84,9 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
    * Add a Gemini model with a single API key (internal method)
    */
   private addBasicModel(options: GeminiAddModelOptions): this {
-    const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = options;
+    // Apply defaults FIRST
+    const mergedOptions = this.applyDefaults(options);
+    const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = mergedOptions;
     
     if (!apiKey) {
       throw new Error('apiKey is required for Gemini models');
@@ -97,7 +109,19 @@ export class GeminiBuilder extends ProviderBuilder<GeminiAddModelOptions, Gemini
    * Add a Gemini model with unified load balancing (internal)
    */
   private addLoadBalancedModel(options: GeminiLoadBalanceOptions): this {
-    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
+    // For load-balanced models, manually merge litellmParams and rootParams from defaults
+    const mergedOptions = {
+      ...options,
+      litellmParams: {
+        ...this.defaults?.litellmParams,
+        ...options.litellmParams
+      },
+      rootParams: {
+        ...this.defaults?.rootParams,
+        ...options.rootParams
+      }
+    };
+    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = mergedOptions;
     
     if (loadBalanceConfig.strategy !== 'cartesian') {
       throw new Error(`Gemini only supports cartesian load balancing strategy, got: ${loadBalanceConfig.strategy}`);

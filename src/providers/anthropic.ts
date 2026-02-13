@@ -19,26 +19,45 @@ export interface AnthropicLoadBalanceOptions extends BaseLoadBalanceOptions {
   modelId: string;
 }
 
+// Define what can be defaulted (exclude modelId - must be per-model)
+export type AnthropicDefaults = Partial<Omit<AnthropicAddModelOptions, 'modelId'>>;
+
 /**
  * Specialized builder for Anthropic Claude models
  */
-export class AnthropicBuilder extends ProviderBuilder<AnthropicAddModelOptions, AnthropicLoadBalanceOptions> {
-  constructor(modelBuilder: ModelBuilder) {
-    super(modelBuilder);
+export class AnthropicBuilder extends ProviderBuilder<
+  AnthropicAddModelOptions,
+  AnthropicLoadBalanceOptions,
+  AnthropicDefaults
+> {
+  constructor(modelBuilder: ModelBuilder, defaults?: AnthropicDefaults) {
+    super(modelBuilder, defaults);
   }
 
   /**
    * Add a model with fluent interface - returns Anthropic-specific model builder
    */
   addModel(options: Pick<AnthropicAddModelOptions, 'displayName' | 'litellmParams' | 'rootParams'> & {modelId: string, apiKey?: ConfigValue}): AnthropicModelBuilder {
-    const config: ModelConfig & {modelId: string, apiKey?: ConfigValue} = {
+    // Construct full options with defaults
+    const fullOptions: AnthropicAddModelOptions = {
       displayName: options.displayName,
-      litellmParams: options.litellmParams,
-      rootParams: options.rootParams,
       modelId: options.modelId,
-      apiKey: options.apiKey
+      apiKey: options.apiKey || this.defaults?.apiKey!,
+      litellmParams: options.litellmParams,
+      rootParams: options.rootParams
     };
-    
+
+    // Apply full defaults merge
+    const mergedOptions = this.applyDefaults(fullOptions);
+
+    const config: ModelConfig & {modelId: string, apiKey?: ConfigValue} = {
+      displayName: mergedOptions.displayName,
+      litellmParams: mergedOptions.litellmParams,
+      rootParams: mergedOptions.rootParams,
+      modelId: mergedOptions.modelId,
+      apiKey: mergedOptions.apiKey
+    };
+
     return new AnthropicModelBuilder(this, config);
   }
 
@@ -49,15 +68,18 @@ export class AnthropicBuilder extends ProviderBuilder<AnthropicAddModelOptions, 
     if (!config.modelId) {
       throw new Error('modelId is required for Anthropic models');
     }
-    
-    if (!config.apiKey) {
+
+    // Use apiKey from config or defaults
+    const apiKey = config.apiKey || this.defaults?.apiKey;
+
+    if (!apiKey) {
       throw new Error('apiKey is required for simple Anthropic models');
     }
-    
+
     return this.addBasicModel({
       displayName: config.displayName,
       modelId: config.modelId,
-      apiKey: config.apiKey,
+      apiKey: apiKey,
       litellmParams: config.litellmParams,
       rootParams: config.rootParams
     });
@@ -74,7 +96,9 @@ export class AnthropicBuilder extends ProviderBuilder<AnthropicAddModelOptions, 
    * Add an Anthropic model with a single API key (internal method)
    */
   private addBasicModel(options: AnthropicAddModelOptions): this {
-    const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = options;
+    // Apply defaults FIRST
+    const mergedOptions = this.applyDefaults(options);
+    const {displayName, modelId, apiKey, litellmParams = {}, rootParams = {}} = mergedOptions;
 
     this.modelBuilder.addModel({
       modelName: displayName,
@@ -93,7 +117,19 @@ export class AnthropicBuilder extends ProviderBuilder<AnthropicAddModelOptions, 
    * Add an Anthropic model with unified load balancing (internal)
    */
   private addLoadBalancedModel(options: AnthropicLoadBalanceOptions): this {
-    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = options;
+    // For load-balanced models, manually merge litellmParams and rootParams from defaults
+    const mergedOptions = {
+      ...options,
+      litellmParams: {
+        ...this.defaults?.litellmParams,
+        ...options.litellmParams
+      },
+      rootParams: {
+        ...this.defaults?.rootParams,
+        ...options.rootParams
+      }
+    };
+    const {displayName, modelId, loadBalanceConfig, litellmParams = {}, rootParams = {}} = mergedOptions;
     
     if (loadBalanceConfig.strategy !== 'cartesian') {
       throw new Error(`Anthropic only supports cartesian load balancing strategy, got: ${loadBalanceConfig.strategy}`);
