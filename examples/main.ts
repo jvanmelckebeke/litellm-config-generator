@@ -1,5 +1,5 @@
 // examples/main.ts
-import { LiteLLMConfigBuilder, env, BedrockModelId } from '../src';
+import { LiteLLMConfigBuilder, env } from '../src';
 
 // Create the main config builder
 const builder = new LiteLLMConfigBuilder()
@@ -23,100 +23,68 @@ const builder = new LiteLLMConfigBuilder()
         enable_pre_call_checks: true
     });
 
-// Create AWS Bedrock builder with CRIS detection
-const awsBuilder = builder.createAwsBuilder({
-    accessKeyId: env('AWS_ACCESS_KEY_ID'),
-    secretAccessKey: env('AWS_SECRET_ACCESS_KEY'),
-    defaultRegionMap: {
-        'eu': env('AWS_REGION_NAME_EU'),
-        'us': env('AWS_REGION_NAME_US')
-    },
-    detectCRIS: false // disable auto-detection
-}).withCacheControl(['system', 'user', 'assistant']);
-
-// Add AWS Bedrock models
-// With CRIS detection, models that support both EU and US will be automatically
-// created for both regions with load balancing
-
-// Cohere Embedding
-awsBuilder.addModel({
-    displayName: 'cohere-embed-english-v3',
-    modelId: 'cohere.embed-english-v3',
-    region: 'eu' // Will auto-create for both regions if CRIS is supported
+// openrouter builder with defaults - no more repeated apiKey!
+const openrouterBuilder = builder.createOpenRouterBuilder({
+    apiKey: env('OPENROUTER_API_KEY')  // Set once as default
 });
 
-
-awsBuilder.addModel({
-    displayName: 'claude-3-7',
-    modelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
-    region: 'eu'
-});
-
-// Claude models with thinking capability using fluent API
-awsBuilder.addModel({
-    displayName: 'claude-3-7',
-    modelId: 'anthropic.claude-3-7-sonnet-20250219-v1:0'
+openrouterBuilder.addModel({
+    displayName: 'grok-4',
+    modelId: 'x-ai/grok-4'
 })
-    .withRegions(['eu'])
-    .withThinkingVariations([1024, 16384]);
+    .build();
 
-awsBuilder.addModel({
-    displayName: 'claude-4-sonnet',
-    modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-    region: 'us'
-});
-
-awsBuilder.addModel({
-    displayName: 'claude-4-sonnet',
-    modelId: 'global.anthropic.claude-sonnet-4-20250514-v1:0',
-    region: 'us'
-});
-
-awsBuilder.addModel({
-    displayName: 'claude-4-sonnet',
-    modelId: 'us.anthropic.claude-sonnet-4-20250514-v1:0'
+openrouterBuilder.addModel({
+    displayName: 'grok-4.1-fast',
+    modelId: 'x-ai/grok-4.1-fast'
 })
-    .withRegions(['us'])
-    .withThinkingVariations([1024]);
+    .build();
 
-awsBuilder.addModel({
-    displayName: 'claude-4-sonnet',
-    modelId: 'global.anthropic.claude-sonnet-4-20250514-v1:0',
-    region: 'us'
+openrouterBuilder.addModel({
+    displayName: 'grok-4-fast',
+    modelId: 'x-ai/grok-4-fast'
 })
-    .withThinkingVariations([1024]);
+    .build();
 
-awsBuilder.addModel({
-    displayName: 'claude-4.5-sonnet',
-    modelId: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',
-    region: 'eu'
-});
+openrouterBuilder.addModel({
+    displayName: 'nova-2-live',
+    modelId: 'amazon/nova-2-lite-v1',
+}).build();
 
-awsBuilder.addModel({
-    displayName: 'claude-4.5-sonnet',
-    modelId: 'global.anthropic.claude-sonnet-4-5-20250929-v1:0'
-})
+// gemini models via openrouter
+
+openrouterBuilder.addModel({
+    displayName: 'gemini-3-pro',
+    modelId: 'google/gemini-3-pro-preview'
+}).build();
+
+openrouterBuilder.addModel({
+    displayName: 'gemini-2.5-flash',
+    modelId: 'google/gemini-2.5-flash-preview-09-2025'
+}).build();
+
+openrouterBuilder.addModel({
+    displayName: 'gemini-2.0-flash',
+    modelId: 'google/gemini-2.0-flash-001'
+}).build();
 
 
-awsBuilder.addModel({
-    displayName: 'claude-4.1-opus',
-    modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0',
-    region: 'us'
-});
+openrouterBuilder.addModel({
+    displayName: 'gemini-2.0-flash-lite',
+    modelId: 'google/gemini-2.0-flash-lite-001'
+}).build();
 
-awsBuilder.addModel({
-    displayName: 'claude-4.1-opus',
-    modelId: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
-})
-    .withRegions(['us'])
-    .withThinkingVariations([1024]);
 
-awsBuilder.addModel({
-    displayName: 'pegasus-1.2',
-    modelId: 'us.twelvelabs.pegasus-1-2-v1:0',
-    region: 'us'
-});
+// OpenAI-compatible proxy for Anthropic models
+const anthropicProxy = builder.createOpenAICompatibleBuilder(
+    {},
+    { apiBase: 'http://cli-proxy-api:8317/v1', apiKey: env('CLI_PROXY_API_KEY') }
+);
 
+anthropicProxy.addModel({ displayName: 'claude-4.5-haiku', modelId: 'claude-haiku-4-5-20251001' }).build();
+anthropicProxy.addModel({ displayName: 'claude-4.6-opus', modelId: 'claude-opus-4-6' }).build();
+anthropicProxy.addModel({ displayName: 'claude-4.5-sonnet', modelId: 'claude-sonnet-4-5-20250929' }).build();
+anthropicProxy.addModel({ displayName: 'claude-4.5-opus', modelId: 'claude-opus-4-5-20251101' }).build();
 
 // Create the Gemini builder
 const geminiBuilder = builder.createGeminiBuilder();
@@ -129,29 +97,6 @@ const gemini_api_keys = [
 ]
 
 // Add Gemini models using fluent API
-geminiBuilder.addModel({
-    displayName: 'gemini-2.0-flash',
-    modelId: 'gemini-2.0-flash',
-    rootParams: { rpm: 15 }
-})
-    .withApiKeys(gemini_api_keys)
-    .build();
-
-geminiBuilder.addModel({
-    displayName: 'gemini-2.0-flash-lite',
-    modelId: 'gemini-2.0-flash-lite',
-    rootParams: { rpm: 30 }
-})
-    .withApiKeys(gemini_api_keys)
-    .build();
-
-geminiBuilder.addModel({
-    displayName: 'gemini-2.5-flash',
-    modelId: 'gemini-2.5-flash-preview-05-20',
-    rootParams: { rpm: 10 }
-})
-    .withApiKeys(gemini_api_keys)
-    .build();
 
 geminiBuilder.addModel({
     displayName: 'text-embedding-004',
@@ -160,22 +105,6 @@ geminiBuilder.addModel({
     .withApiKeys(gemini_api_keys)
     .build();
 
-// openrouter builder
-const openrouterBuilder = builder.createOpenRouterBuilder();
-
-openrouterBuilder.addModel({
-    displayName: 'grok-4',
-    modelId: 'x-ai/grok-4',
-    apiKey: env('OPENROUTER_API_KEY')
-})
-    .build();
-
-openrouterBuilder.addModel({
-    displayName: 'grok-4-fast',
-    modelId: 'x-ai/grok-4-fast',
-    apiKey: env('OPENROUTER_API_KEY')
-})
-    .build();
 
 
 // Generate the config

@@ -1,5 +1,5 @@
 // Auto-generated file. Do not edit manually.
-// Generated on 2025-09-30T08:50:29.150Z
+// Generated on 2025-11-24T14:02:39.623Z
 // Source: AWS Bedrock API from regions: eu-central-1, us-east-1
 
 export const generatedAllowedBedrockModelIdentifiers = [
@@ -26,13 +26,18 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'eu.anthropic.claude-3-7-sonnet-20250219-v1:0',
   'eu.anthropic.claude-3-haiku-20240307-v1:0',
   'eu.anthropic.claude-3-sonnet-20240229-v1:0',
+  'eu.anthropic.claude-haiku-4-5-20251001-v1:0',
   'eu.anthropic.claude-sonnet-4-20250514-v1:0',
   'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',
+  'eu.cohere.embed-v4:0',
   'eu.meta.llama3-2-1b-instruct-v1:0',
   'eu.meta.llama3-2-3b-instruct-v1:0',
   'eu.mistral.pixtral-large-2502-v1:0',
+  'eu.twelvelabs.pegasus-1-2-v1:0',
+  'global.anthropic.claude-haiku-4-5-20251001-v1:0',
   'global.anthropic.claude-sonnet-4-20250514-v1:0',
   'global.anthropic.claude-sonnet-4-5-20250929-v1:0',
+  'global.cohere.embed-v4:0',
   'meta.llama3-70b-instruct-v1:0',
   'meta.llama3-8b-instruct-v1:0',
   'mistral.mistral-7b-instruct-v0:2',
@@ -41,6 +46,7 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'mistral.mixtral-8x7b-instruct-v0:1',
   'openai.gpt-oss-120b-1:0',
   'openai.gpt-oss-20b-1:0',
+  'qwen.qwen3-235b-a22b-2507-v1:0',
   'qwen.qwen3-32b-v1:0',
   'qwen.qwen3-coder-30b-a3b-v1:0',
   'us.amazon.nova-lite-v1:0',
@@ -54,10 +60,12 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'us.anthropic.claude-3-haiku-20240307-v1:0',
   'us.anthropic.claude-3-opus-20240229-v1:0',
   'us.anthropic.claude-3-sonnet-20240229-v1:0',
+  'us.anthropic.claude-haiku-4-5-20251001-v1:0',
   'us.anthropic.claude-opus-4-1-20250805-v1:0',
   'us.anthropic.claude-opus-4-20250514-v1:0',
   'us.anthropic.claude-sonnet-4-20250514-v1:0',
   'us.anthropic.claude-sonnet-4-5-20250929-v1:0',
+  'us.cohere.embed-v4:0',
   'us.deepseek.r1-v1:0',
   'us.meta.llama3-1-70b-instruct-v1:0',
   'us.meta.llama3-1-8b-instruct-v1:0',
@@ -69,6 +77,9 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'us.meta.llama4-maverick-17b-instruct-v1:0',
   'us.meta.llama4-scout-17b-instruct-v1:0',
   'us.mistral.pixtral-large-2502-v1:0',
+  'us.stability.stable-conservative-upscale-v1:0',
+  'us.stability.stable-creative-upscale-v1:0',
+  'us.stability.stable-fast-upscale-v1:0',
   'us.stability.stable-image-control-sketch-v1:0',
   'us.stability.stable-image-control-structure-v1:0',
   'us.stability.stable-image-erase-object-v1:0',
@@ -77,17 +88,24 @@ export const generatedAllowedBedrockModelIdentifiers = [
   'us.stability.stable-image-search-recolor-v1:0',
   'us.stability.stable-image-search-replace-v1:0',
   'us.stability.stable-image-style-guide-v1:0',
+  'us.stability.stable-outpaint-v1:0',
   'us.stability.stable-style-transfer-v1:0',
   'us.twelvelabs.marengo-embed-2-7-v1:0',
+  'us.twelvelabs.marengo-embed-3-0-v1:0',
   'us.twelvelabs.pegasus-1-2-v1:0',
+  'us.writer.palmyra-x4-v1:0',
+  'us.writer.palmyra-x5-v1:0',
 ] as const;
 
 export const generatedAllowedEmbeddingModelIdentifiers = [
+  'amazon.nova-2-multimodal-embeddings-v1:0',
   'amazon.titan-embed-g1-text-02',
   'amazon.titan-embed-image-v1',
   'amazon.titan-embed-text-v1',
   'amazon.titan-embed-text-v2:0',
   'cohere.embed-english-v3',
   'cohere.embed-multilingual-v3',
+  'cohere.embed-v4:0',
   'twelvelabs.marengo-embed-2-7-v1:0',
+  'twelvelabs.marengo-embed-3-0-v1:0',
 ] as const;
